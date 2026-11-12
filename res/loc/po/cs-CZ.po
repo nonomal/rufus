@@ -1,9 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: 3.5\n"
+"Project-Id-Version: 4.14\n"
 "Report-Msgid-Bugs-To: pete@akeo.ie\n"
-"POT-Creation-Date: 2020-04-17 12:17+0100\n"
-"PO-Revision-Date: 2020-04-17 12:19+0100\n"
+"POT-Creation-Date: 2026-03-23 18:33+0000\n"
+"PO-Revision-Date: 2026-03-23 18:33+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,9 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Rufus-LanguageName: Czech (Čeština)\n"
 "X-Rufus-LCID: 0x0405\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.9\n"
 
 #. • IDD_DIALOG → IDS_DRIVE_PROPERTIES_TXT
 msgid "Drive Properties"
@@ -54,13 +54,11 @@ msgstr "Seznam USB disků"
 msgid "Add fixes for old BIOSes (extra partition, align, etc.)"
 msgstr "Přidat opravu pro starší BIOSy (extra partition, align, etc.)"
 
-#. • IDD_DIALOG → IDC_RUFUS_MBR
+#. • IDD_DIALOG → IDC_UEFI_MEDIA_VALIDATION
 #.
-#. 'MBR': See http://en.wikipedia.org/wiki/Master_boot_record
-#. Rufus can install it's own custom MBR (the Rufus MBR), which also allows users to
-#. specify a custom disk ID for the BIOS. The tooltip for this control is MSG_167.
-msgid "Use Rufus MBR with BIOS ID"
-msgstr "Použijte Rufus MBR s ID BIOS"
+#. It is acceptable to drop the "runtime" if you are running out of space
+msgid "Enable runtime UEFI media validation"
+msgstr "Povolit ověřování médií UEFI za běhu"
 
 #. • IDD_DIALOG → IDS_FORMAT_OPTIONS_TXT
 msgid "Format Options"
@@ -105,7 +103,7 @@ msgstr "Zavřít"
 
 #. • IDD_DIALOG → IDC_START
 msgid "Start"
-msgstr ""
+msgstr "Spustit"
 
 #. • IDD_ABOUTBOX → IDD_ABOUTBOX
 msgid "About Rufus"
@@ -312,7 +310,7 @@ msgstr ""
 
 #. • MSG_025
 #.
-#. *Short* version of the pentabyte size suffix
+#. *Short* version of the petabyte size suffix
 msgid "PB"
 msgstr ""
 
@@ -487,7 +485,7 @@ msgstr "Není možné otevřít zařízení. Zřejmě je používáno jiným pro
 
 #. • MSG_068
 msgid "Could not partition drive."
-msgstr "Chyba při vytváření oddílu."
+msgstr "Disk nelze rozdělit."
 
 #. • MSG_069
 msgid "Could not copy files to target drive."
@@ -668,7 +666,7 @@ msgstr "Omezení souborového systému"
 
 #. • MSG_100
 msgid "This ISO image contains a file larger than 4 GB, which is more than the maximum size allowed for a FAT or FAT32 file system."
-msgstr "Tento ISO obraz obsahuje soubor větší než 4 GB, přesahující maximální přípustnou velikost souborového systému FAT nebo FAT32."
+msgstr "Tento obraz ISO obsahuje soubor větší než 4 GB, což je více než maximální povolená velikost pro systém souborů FAT nebo FAT32."
 
 #. • MSG_101
 msgid "Missing WIM support"
@@ -770,7 +768,7 @@ msgid ""
 msgstr ""
 "Tento obraz používá Syslinux %s%s, tato aplikace však obsahuje pouze instalační soubory pro Syslinux %s%s.\n"
 "\n"
-"Jelikož nové verze Syslinux nejsou vzájemně kompatibilní a není možné v programu Rufus zahrnout všechny verze, je nutné z Internetu stáhnout dodatečné dva soubory  (ldlinux.sys a ldlinux.bss):\n"
+"Jelikož nové verze Syslinux nejsou vzájemně kompatibilní a není možné v programu Rufus zahrnout všechny verze, je nutné z Internetu stáhnout dodatečné dva soubory (ldlinux.sys a ldlinux.bss):\n"
 "- Zvolte 'Ano' pro stažení souborů z Internetu\n"
 "- Zvolte 'Ne' pro zrušení operace\n"
 "\n"
@@ -850,7 +848,7 @@ msgstr "Ne trvalý"
 
 #. • MSG_125
 #.
-#. Tooltips used for the peristence size slider and edit control
+#. Tooltips used for the persistence size slider and edit control
 msgid "Set the size of the persistent partition for live USB media. Setting the size to 0 disables the persistent partition."
 msgstr "Nastavte velikost trvalého oddílu pro živá média USB. Nastavení velikosti 0 zakáže trvalý oddíl."
 
@@ -892,17 +890,17 @@ msgstr "K tomuto disku přistupuje jiný program nebo proces. Chcete ho přesto 
 
 #. • MSG_133
 msgid ""
-"Rufus has detected that you are attempting to create a Windows To Go media based on a 1809 ISO.\n"
+"Rufus has detected that you are attempting to create a 'Windows To Go' media based on a 1809 ISO.\n"
 "\n"
 "Because of a *MICROSOFT BUG*, this media will crash during Windows boot (Blue Screen Of Death), unless you manually replace the file 'WppRecorder.sys' with a 1803 version.\n"
 "\n"
 "Also note that the reason Rufus cannot automatically fix this for you is that 'WppRecorder.sys' is a Microsoft copyrighted file, so we cannot legally embed a copy of the file in the application..."
 msgstr ""
-"Rufus zjistil, že se pokoušíte vytvořit Windows To Go médií založené na 1809 ISO.\n"
+"Rufus zjistil, že se pokoušíte vytvořit médium „Windows To Go“ založené na 1809 ISO.\n"
 "\n"
-"Vzhledem k tomu, že *MICROSOFT BUG*, toto médium se při spouštění systému Windows zhroutí (Blue Screen), pokud soubor „WppRecorder.sys“ ručně nenahradíte verzí 1803.\n"
+"Kvůli chybě *MICROSOFT BUG* dojde k pádu tohoto média během spouštění systému Windows (modrá obrazovka smrti), pokud ručně nenahradíte soubor 'WppRecorder.sys' verzí 1803..\n"
 "\n"
-"Důvodem proč Rufus nemůže automaticky opravit, je, že soubor „WppRecorder.sys“ je souborem chráněným autorskými právy společnosti Microsoft, takže nemůžeme legálně vložit kopii souboru do aplikace..."
+"Všimněte si také, že důvod, proč to Rufus nemůže automaticky opravit za vás, je ten, že „WppRecorder.sys“ je soubor chráněný autorským právem společnosti Microsoft, takže nemůžeme legálně vložit kopii souboru do aplikace..."
 
 #. • MSG_134
 msgid ""
@@ -951,8 +949,8 @@ msgid "Download using a browser"
 msgstr "Stáhnout pomocí prohlížeče"
 
 #. • MSG_144
-msgid "Temporarily banned by Microsoft for requesting too many downloads - Please try again later..."
-msgstr "Microsoft dočasně zakázal žádostí z důvodu příliš mnoho stahování - zkuste to znovu později ..."
+msgid "Download of Windows ISOs is unavailable due to Microsoft having altered their website to prevent it."
+msgstr "Stahování ISO systému Windows je nedostupné, protože společnost Microsoft změnila své webové stránky, aby tomu zabránila."
 
 #. • MSG_145
 msgid "PowerShell 3.0 or later is required to run this script."
@@ -1047,16 +1045,8 @@ msgid "Check this box to allow the display of international labels and set a dev
 msgstr "Povolíte v názvu disku zobrazení mezinárodních znaků a vytvoření ikony zařízení (vytvořením souboru autorun.inf)"
 
 #. • MSG_167
-msgid "Install an MBR that allows boot selection and can masquerade the BIOS USB drive ID"
-msgstr "Instalovat MBR, který umožní výběr při zavádění systému a zamaskování BIOS ID disku USB"
-
-#. • MSG_168
-msgid ""
-"Try to masquerade first bootable USB drive (usually 0x80) as a different disk.\n"
-"This should only be necessary if you install Windows XP and have more than one disk."
-msgstr ""
-"Pokusit se o zamaskování boot USB jednotky (většinou 0x80) jako jiného disku.\n"
-"Obvykle nutné pouze pokud chcete instalovat Windows XP a máte více jak jeden disk."
+msgid "Install a UEFI bootloader, that will perform MD5Sum file validation of the media"
+msgstr "Nainstalujte zavaděč UEFI, který provede ověření souboru MD5Sum na médiu"
 
 #. • MSG_169
 msgid ""
@@ -1207,6 +1197,10 @@ msgstr "Zjištěna Nestandartní velikost sektorů"
 msgid "'Windows To Go' can only be installed on a GPT partitioned drive if it has the FIXED attribute set. The current drive was not detected as FIXED."
 msgstr "'Přenosný Windows' lze nainstalovat pouze na GPT oddíl, nastavte PEVNÝ atribut. Aktuální jednotka nebyla detekována jako PEVNÁ."
 
+#. • MSG_199
+msgid "This feature is not available on this platform."
+msgstr "Tato funkce není na této platformě k dispozici."
+
 #. • MSG_201
 msgid "Cancelling - Please wait..."
 msgstr "Ukončuje se operace - čekejte..."
@@ -1313,8 +1307,8 @@ msgid "Formatting (%s) - estimated duration %d:%02d..."
 msgstr "Formátování (%s) - zbývající čas: %d:%02d..."
 
 #. • MSG_221
-msgid "Setting Label (This may take a while)..."
-msgstr "Nastavení jmenovky (může chvíli trvat)..."
+msgid "Setting label (%s)..."
+msgstr "Nastavení jmenovky (%s)..."
 
 #. • MSG_222
 #.
@@ -1344,11 +1338,11 @@ msgstr "Uzavření stávajícího svazku..."
 
 #. • MSG_228
 msgid "Writing Master Boot Record..."
-msgstr "Zapisování hlavního záznamu boot..."
+msgstr "Zápis hlavního spouštěcího záznamu..."
 
 #. • MSG_229
 msgid "Writing Partition Boot Record..."
-msgstr "Zapisování boot záznamu oddílu..."
+msgstr "Zapisování spouštěcího záznamu oddílu..."
 
 #. • MSG_230
 msgid "Copying DOS files..."
@@ -1359,8 +1353,8 @@ msgid "Copying ISO files: %s"
 msgstr "Kopírování ISO souborů: %s"
 
 #. • MSG_232
-msgid "Win7 EFI boot setup (This may take a while)..."
-msgstr "Nastavení Win7 EFI režimu boot (může chvíli trvat)..."
+msgid "Win7 EFI boot setup (%s)..."
+msgstr "Nastavení Win7 EFI režimu boot (%s)..."
 
 #. • MSG_233
 msgid "Finalizing, please wait..."
@@ -1395,8 +1389,8 @@ msgid "Partitioning (%s)..."
 msgstr "Vytváření oddílů (%s)..."
 
 #. • MSG_239
-msgid "Deleting partitions..."
-msgstr "Odstraňování oddílů..."
+msgid "Deleting partitions (%s)..."
+msgstr "Odstraňování oddílů (%s)..."
 
 #. • MSG_240
 #.
@@ -1406,7 +1400,7 @@ msgid ""
 "\n"
 "The download will be deleted. Please check the log for more details."
 msgstr ""
-"Podpis stažené aktualizace nelze ověřit. To může znamenat, že systém je nesprávně nakonfigurován pro ověření podpisu nebo označil stažený soubor  jako škodlivý.\n"
+"Podpis stažené aktualizace nelze ověřit. To může znamenat, že systém je nesprávně nakonfigurován pro ověření podpisu nebo označil stažený soubor jako škodlivý.\n"
 "\n"
 "Stahování bude smazáno. Zkontrolujte podrobnosti v protokolu."
 
@@ -1522,7 +1516,7 @@ msgstr "Dvojí UEFI/BIOS režim"
 
 #. • MSG_267
 msgid "Applying Windows image: %s"
-msgstr "Použití Windows obrazu: %s"
+msgstr "Použití obrazu systému Windows: %s"
 
 #. • MSG_268
 msgid "Applying Windows image..."
@@ -1538,7 +1532,7 @@ msgstr "USB ladění"
 
 #. • MSG_271
 msgid "Computing image checksums: %s"
-msgstr "Výpočet kontrolních součtů: %s"
+msgstr "Výpočet kontrolních součtů obrazů: %s"
 
 #. • MSG_272
 msgid "Compute the MD5, SHA1 and SHA256 checksums for the selected image"
@@ -1549,8 +1543,8 @@ msgid "Change the application language"
 msgstr "Změna jazyka aplikace"
 
 #. • MSG_274
-msgid "ISOHybrid image detected"
-msgstr "ISO Hybridní obraz detekován"
+msgid "%s image detected"
+msgstr "%s obraz detekován"
 
 #. • MSG_275
 #.
@@ -1563,7 +1557,7 @@ msgid ""
 "Please select the mode that you want to use to write this image:"
 msgstr ""
 "Obráz, který jste si vybrali, je obraz 'ISO Hybrid'. To znamená, že může být zapsán buď v %s (kopírování souborů) v režimu %s (obraz disku) režim.\n"
-"Rufus doporučuje použití %s režim, pokud je plný přístu k jednotce pro zápis.\n"
+"Rufus doporučuje použití %s režim, pokud je plný přístup k jednotce pro zápis.\n"
 "Pokud narazíte na problémy při startu, můžete zkusit zapsat tento obraz znovu %s režim.\n"
 "\n"
 "Vyberte režim, který chcete použít k zapsání tohoto obrázu:"
@@ -1651,8 +1645,12 @@ msgid "Unsupported Windows version"
 msgstr "Nepodporovaná verze systému Windows"
 
 #. • MSG_294
-msgid "This version of Windows is no longer supported by Rufus."
-msgstr "Tuto verze systému Windows nepodporuje Rufus."
+msgid ""
+"This version of Windows is no longer supported by Rufus.\n"
+"The last version of Rufus compatible with this platform is v%d.%d."
+msgstr ""
+"Tato verze systému Windows již není systémem Rufus podporována.\n"
+"Poslední verze systému Rufus kompatibilní s touto platformou je v%d.%d."
 
 #. • MSG_295
 msgid "Warning: Unofficial version"
@@ -1717,8 +1715,8 @@ msgid "Create a disk image of the selected device"
 msgstr "Vytvořit obraz disku vybraného zařízení"
 
 #. • MSG_305
-msgid "Use this option to indicate whether you want to use this device to install Windows on another disk, or if you want to run Windows directly from this drive (Windows To Go)."
-msgstr "Touto volbou označte, zda chcete toto zařízení používat k instalaci Windows na jiný disk, nebo pokud chcete spustit systém Windows přímo z této jednotky (Windows To Go)."
+msgid "Use this option to indicate if you plan to install Windows to a different disk, or if you want to run Windows directly from this drive (Windows To Go)."
+msgstr "Pomocí této možnosti určete, zda plánujete nainstalovat systém Windows na jiný disk, nebo zda chcete spustit systém Windows přímo z této jednotky (Windows To Go)."
 
 #. • MSG_306
 #.
@@ -1726,3 +1724,410 @@ msgstr "Touto volbou označte, zda chcete toto zařízení používat k instalac
 #. It's the same as MSG_286 but with a process that *may* be faster, hence the name.
 msgid "Fast-zeroing drive: %s"
 msgstr "Rychlé-přepsání jednotky: %s"
+
+#. • MSG_307
+msgid "this may take a while"
+msgstr "může to chvíli trvat"
+
+#. • MSG_308
+msgid "VHD detection"
+msgstr "Detekce VHD"
+
+#. • MSG_309
+msgid "Compressed archive"
+msgstr "Komprimovaný archiv"
+
+#. • MSG_310
+msgid ""
+"The ISO you have selected uses UEFI and is small enough to be written as an EFI System Partition (ESP). Writing to an ESP, instead of writing to a generic data partition occupying the whole disk, can be preferable for some types of installations.\n"
+"\n"
+"Please select the mode that you want to use to write this image:"
+msgstr ""
+"Vybraný soubor ISO používá systém UEFI a je dostatečně malý na to, aby mohl být zapsán jako systémový oddíl EFI (ESP). Pro některé typy instalací může být vhodnější zapisovat do ESP místo do obecného datového oddílu zabírajícího celý disk..\n"
+"\n"
+"Vyberte režim, který chcete použít pro zápis tohoto obrázku:"
+
+#. • MSG_311
+msgid "Use %s (in the main application window) to enable."
+msgstr "Use %s (v hlavním okně aplikace) povolit."
+
+#. • MSG_312
+msgid "Extra hashes (SHA512)"
+msgstr "Další hashe (SHA512)"
+
+#. • MSG_313
+msgid "Save to VHD"
+msgstr "Uložit do VHD"
+
+#. • MSG_314
+msgid "Compute image checksums"
+msgstr "Výpočet kontrolních součtů obrazů"
+
+#. • MSG_315
+msgid "Multiple buttons"
+msgstr "Více tlačítek"
+
+#. • MSG_316
+msgid "Number of passes"
+msgstr "Počet průchodů"
+
+#. • MSG_317
+msgid "Disk ID"
+msgstr ""
+
+#. • MSG_318
+msgid "Default thread priority: %d"
+msgstr "Výchozí priorita vlákna: %d"
+
+#. • MSG_319
+msgid "Ignore Boot Marker"
+msgstr "Ignorovat Boot Marker"
+
+#. • MSG_320
+msgid "Refreshing partition layout (%s)..."
+msgstr "Obnovení rozložení oddílu (%s)..."
+
+#. • MSG_321
+msgid ""
+"The image you have selected is an ISOHybrid, but its creators have not made it compatible with ISO/File copy mode.\n"
+"As a result, DD image writing mode will be enforced."
+msgstr ""
+"Vybraný obraz je ISOHybrid, ale jeho tvůrci ho neudělali kompatibilní s režimem kopírování ISO/File..\n"
+"V důsledku toho bude vynucen režim zápisu obrázků DD."
+
+#. • MSG_322
+msgid "Unable to open or read '%s'"
+msgstr "Nelze otevřít nebo přečíst soubor '%s'"
+
+#. • MSG_323
+msgid "Apply SkuSiPolicy.p7b on installation (See KB5042562)"
+msgstr "Při instalaci použijte SkuSiPolicy.p7b (viz KB5042562)"
+
+#. • MSG_324
+msgid "QoL improvements (Don't force Copilot, OneDrive, Outlook, Fast Startup, etc.)"
+msgstr "QoL vylepšení (neinstaluje Copilota, OneDrive, Outlook, rychlé spuštění atd.)"
+
+#. • MSG_325
+msgid "Applying Windows customization: %s"
+msgstr "Použití přizpůsobení systému Windows: %s"
+
+#. • MSG_326
+msgid "Applying user options..."
+msgstr "Použití uživatelských možností..."
+
+#. • MSG_327
+msgid "Windows User Experience"
+msgstr "Uživatelské prostředí systému Windows"
+
+#. • MSG_328
+msgid "Customize Windows installation?"
+msgstr "Přizpůsobení instalace systému Windows?"
+
+#. • MSG_329
+msgid "Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0"
+msgstr "Odstranění požadavku na více než 4 GB RAM, Secure Boot a TPM 2.0"
+
+#. • MSG_330
+msgid "Remove requirement for an online Microsoft account"
+msgstr "Odstranění požadavku na online účet Microsoft"
+
+#. • MSG_331
+msgid "Disable data collection (Skip privacy questions)"
+msgstr "Zakázat sběr dat (Přeskočit otázky týkající se ochrany osobních údajů)"
+
+#. • MSG_332
+msgid "Prevent Windows To Go from accessing internal disks"
+msgstr "Zabránění přístupu systému Windows To Go k interním diskům"
+
+#. • MSG_333
+msgid "Create a local account with username:"
+msgstr "Vytvořte místní účet s uživatelským jménem:"
+
+#. • MSG_334
+msgid "Set regional options to the same values as this user's"
+msgstr "Nastavení regionálních voleb na stejné hodnoty jako u tohoto uživatele"
+
+#. • MSG_335
+msgid "Disable BitLocker automatic device encryption"
+msgstr "Zakázání automatického šifrování zařízení nástrojem BitLocker"
+
+#. • MSG_336
+msgid "Persistent log"
+msgstr "Trvalý protokol"
+
+#. • MSG_337
+msgid ""
+"An additional file ('%s') must be downloaded from Microsoft to use this feature:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The file will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"Další soubor ('%s') je nutné stáhnout ze stránek společnosti Microsoft, aby bylo možné tuto funkci používat:\n"
+"- Výběrem možnosti \"Ano\" se připojíte k Internetu a stáhnete ji.\n"
+"- Výběrem možnosti \"Ne\" operaci zrušíte\n"
+"\n"
+"Poznámka: Soubor bude stažen do adresáře aplikace a bude automaticky znovu použit, pokud je přítomen.."
+
+#. • MSG_338
+msgid "Revoked UEFI bootloader detected"
+msgstr "Byl zjištěn odvolaný zavaděč UEFI"
+
+#. • MSG_339
+msgid ""
+"Rufus detected that the ISO you have selected contains a UEFI bootloader that has been revoked and that will produce %s, when Secure Boot is enabled on a fully up to date UEFI system.\n"
+"\n"
+"- If you obtained this ISO image from a non reputable source, you should consider the possibility that it might contain UEFI malware and avoid booting from it.\n"
+"- If you obtained it from a trusted source, you should try to locate a more up to date version, that will not produce this warning."
+msgstr ""
+"Rufus zjistil, že vámi vybraný ISO obsahuje zavaděč UEFI, který byl odvolán a který vytvoří %s, když je v plně aktuálním systému UEFI povoleno Secure Boot.\n"
+"\n"
+"- Pokud jste tento obraz ISO získali z nerenomovaného zdroje, měli byste zvážit možnost, že by mohl obsahovat malware UEFI a vyhnout se bootování z něj.\n"
+"- Pokud jste jej získali z důvěryhodného zdroje, měli byste se pokusit najít aktuálnější verzi, která toto varování nevyvolá."
+
+#. • MSG_340
+msgid "a \"Security Violation\" screen"
+msgstr "obrazovka \"Porušení zabezpečení\""
+
+#. • MSG_341
+msgid "a Windows Recovery Screen (BSOD) with '%s'"
+msgstr "a Obrazovka zotavení systému Windows (BSOD) s '%s'"
+
+#. • MSG_342
+msgid "Compressed VHDX Image"
+msgstr "Komprimovaný obraz VHDX"
+
+#. • MSG_343
+msgid "Uncompressed VHD Image"
+msgstr "Nekomprimovaný obraz VHD"
+
+#. • MSG_344
+msgid "Full Flash Update Image"
+msgstr "Úplná aktualizace Flash Image"
+
+#. • MSG_345
+msgid ""
+"Some additional data must be downloaded from Microsoft to use this functionality:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation"
+msgstr ""
+"K použití této funkce je třeba stáhnout některá další data od společnosti Microsoft:\n"
+"- Vyberte 'Ano' pro připojení k internetu a stažení\n"
+"- Výběrem možnosti \"Ne\" operaci zrušíte"
+
+#. • MSG_346
+msgid "Restrict Windows to S-Mode (INCOMPATIBLE with online account bypass)"
+msgstr "Omezit Windows na S-Mode (NEKOMPATIBILNÍ s online vynecháním účtu)"
+
+#. • MSG_347
+msgid "Expert Mode"
+msgstr "Expertní režim"
+
+#. • MSG_348
+msgid "Extracting archive files: %s"
+msgstr "Rozbalení archivních souborů: %s"
+
+#. • MSG_349
+msgid "Use Rufus MBR"
+msgstr "Použijte Rufus MBR"
+
+#. • MSG_350
+msgid "Use 'Windows CA 2023' signed bootloaders (Requires a compatible target PC)"
+msgstr "Použití zavaděčů s podpisem \"Windows CA 2023\" (vyžaduje kompatibilní cílový počítač)."
+
+#. • MSG_351
+msgid "Checking for UEFI bootloader revocation..."
+msgstr "Kontrola zrušení zavaděče UEFI..."
+
+#. • MSG_352
+msgid "Checking for UEFI DBX updates..."
+msgstr "Kontrola aktualizací UEFI DBX..."
+
+#. • MSG_353
+msgid "DBX update available"
+msgstr "DBX aktualizace k dispozici"
+
+#. • MSG_354
+msgid ""
+"Rufus has found an updated version of the DBX files used to perform UEFI Secure Boot revocation checks. Do you want to download this update?\n"
+"- Select 'Yes' to connect to the Internet and download this content\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The files will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"Rufus našel aktualizovanou verzi souborů DBX používaných k provádění kontrol odvolání UEFI Secure Boot. Chcete stáhnout tuto aktualizaci?\n"
+"- Chcete-li se připojit k Internetu a stáhnout tento obsah, vyberte možnost \"Ano\".\n"
+"- Výběrem možnosti \"Ne\" operaci zrušíte\n"
+"\n"
+"Poznámka: Soubory budou staženy do adresáře aplikace a budou automaticky znovu použity, pokud jsou k dispozici."
+
+#. • MSG_355
+msgid "⚠SILENTLY⚠ erase disk and install:"
+msgstr "⚠TICHÁ⚠ vymazat disk a nainstalovat:"
+
+#. • MSG_356
+msgid ""
+"You have selected to use the \"silent\" Windows installation option.\n"
+"\n"
+"This is an advanced option, reserved for people who want to create media that does not prompt the user during Windows installation and therefore UNCONDITIONALLY ERASES the first detected disk on the target system. If you are not careful, using this option can result in IRREVERSIBLE DATA LOSS!\n"
+"\n"
+"If this is not what you want, please select 'No' to go back and uncheck the option.\n"
+"Otherwise, if you select 'Yes, you agree that the whole responsibility for any data loss will be entirely with YOU."
+msgstr ""
+"Zvolili jste použití možnosti \"tichá“ instalace systému Windows.\n"
+"\n"
+"Toto je pokročilá možnost vyhrazená pro uživatele, kteří chtějí vytvořit médium, jež během instalace Windows uživatele nevyzve k potvrzení a BEZPODMÍNEČNĚ VYMAŽE první detekovaný disk v cílovém systému. Pokud si nedáte pozor, použití této volby může mít za následek NEVRATNOU ZTRÁTU VŠECH DAT!\n"
+"\n"
+"Pokud to není to, co chcete, vyberte 'Ne' pro návrat zpět a zrušte zaškrtnutí této možnosti.\n"
+"V opačném případě, pokud zvolíte \"Ano, souhlasíte s tím, že veškerou odpovědnost za případnou ztrátu dat ponesete VY."
+
+#. • MSG_358
+msgid "Unsupported image location"
+msgstr "Nepodporované umístění obrázku"
+
+#. • MSG_359
+msgid ""
+"You cannot use an image that is located on the target drive, since that drive is going to be completely erased. It's the same thing as trying to saw the branch you are sitting on!\n"
+"\n"
+"Please move the image to a different location and try again."
+msgstr ""
+"Nemůžete použít obraz umístěný na cílové jednotce, protože tato jednotka bude zcela vymazána. Je to stejné, jako když se snažíte uříznout větev, na které sedíte!\n"
+"\n"
+"Přesuňte prosím obrázek na jiné místo a zkuste to znovu."
+
+#. • MSG_360
+msgid "It is safe to leave this option enabled even if you have a TPM or more RAM, as this option only bypasses the setup requirements and does not actually prevent Windows from using all the hardware available."
+msgstr "Je bezpečné ponechat tuto možnost povolenou i v případě, že máte TPM nebo více RAM, protože tato možnost pouze obchází požadavky na nastavení a ve skutečnosti nebrání systému Windows používat veškerý dostupný hardware."
+
+#. • MSG_361
+msgid "For this option to work, network/Internet MUST be disconnected during installation!"
+msgstr "Aby tato možnost fungovala, MUSÍ být během instalace odpojena síť/internet!"
+
+#. • MSG_362
+msgid "Automatically answer 'no' to the Windows setup questions relating to the sharing of data with Microsoft, instead of prompting the user."
+msgstr "Automaticky odpovídat 'ne' na otázky nastavení systému Windows týkající se sdílení dat se společností Microsoft namísto dotazování uživatele."
+
+#. • MSG_363
+msgid "You should leave this option enabled, unless you are okay with 'Windows To Go' accessing internal disks and silently performing irreversible file system upgrades."
+msgstr "Tuto možnost byste měli ponechat povolenou, pokud vám nevadí, že 'Windows To Go' přistupuje k interním diskům a tiše provádí nevratné aktualizace souborového systému."
+
+#. • MSG_364
+msgid "Automatically create a local account with the specified user name, using an empty password that will need to be changed on next logon."
+msgstr "Automaticky vytvořit místní účet se zadaným uživatelským jménem, s prázdným heslem, které bude nutné změnit při příštím přihlášení."
+
+#. • MSG_365
+msgid "Duplicate the regional settings from this PC (keyboard, timezone, currency), instead of prompting the user."
+msgstr "Převzít místní nastavení z tohoto počítače (klávesnice, časové pásmo, měna) bez nutnosti zásahu uživatele."
+
+#. • MSG_366
+msgid "Don't encrypt the system disk, unless explicitly requested by the user."
+msgstr "Nešifrovat systémový disk bez výslovného požadavku uživatele."
+
+#. • MSG_367
+msgid "Use this option only if you know what S-Mode is and understand that your system may be locked into S-Mode even after you completely erase and reinstall Windows."
+msgstr "Tuto možnost použijte pouze v případě, že víte, co je S-Mode, a chápete, že váš systém může být uzamčen v S-Mode i po úplném vymazání a přeinstalaci systému Windows."
+
+#. • MSG_368
+msgid "Use this option if the system you plan to install Windows on is using fully up-to-date Secure Boot certificates. If needed, you can look into using 'Mosby' to update your system."
+msgstr "Tuto možnost použijte, pokud systém, do kterého plánujete nainstalovat systém Windows, používá plně aktuální certifikáty Secure Boot. V případě potřeby se můžete podívat na možnost aktualizace systému pomocí nástroje Mosby = More Secure Secure Boot."
+
+#. • MSG_369
+msgid "Use this option if you want to revoke additional potentially unsafe Windows bootloaders, but with the potential of also preventing standard Windows media from booting."
+msgstr "Tuto možnost použijte, pokud chcete odebrat další potenciálně nebezpečné zavaděče systému Windows, které však mohou zabránit i zavádění standardních médií systému Windows."
+
+#. • MSG_370
+msgid "\"Quality of Life\" enhancements: Disable most of the unwanted features Microsoft is trying to force onto end users."
+msgstr "\"Vylepšení komfortu uživatele\" vylepšení: Zakázat většinu nežádoucích funkcí, které se Microsoft snaží vnucovat koncovým uživatelům."
+
+#. • MSG_371
+msgid "If you use this option, please make sure to disconnect every disk from the target PC, except the one you want to install Windows on, as well as not leave the media plugged into any PC you don't want to erase."
+msgstr "Pokud použijete tuto možnost, ujistěte se, že jste od cílového počítače odpojili všechny disky kromě toho, na který chcete nainstalovat systém Windows, a nenechávejte médium připojené k žádnému počítači, který nechcete vymazat."
+
+#. • MSG_900
+#.
+#. The following messages are for the Windows Store listing only and are not used by the application
+msgid "Rufus is a utility that helps format and create bootable USB flash drives, such as USB keys/pendrives, memory sticks, etc."
+msgstr "Rufus je nástroj, který pomáhá formátovat a vytvářet bootovací USB flash disky, jako jsou USB klíče, paměťové karty atd."
+
+#. • MSG_901
+msgid "Official site: %s"
+msgstr "Oficiální stránky: %s"
+
+#. • MSG_902
+msgid "Source Code: %s"
+msgstr "Zdrojový kód: %s"
+
+#. • MSG_903
+msgid "ChangeLog: %s"
+msgstr "Protokol změn: %s"
+
+#. • MSG_904
+#.
+#. The gnu.org website has many translations of the GPL (such as https://www.gnu.org/licenses/gpl-3.0.zh-cn.html, https://www.gnu.org/licenses/gpl-3.0.fr.html)
+#. Please make sure you try to locate the relevant https://www.gnu.org/licenses/gpl-3.0.<LANG-ID>.html for your language and use it here.
+msgid ""
+"This application is licensed under the terms of the GNU Public License (GPL) version 3.\n"
+"See https://www.gnu.org/licenses/gpl-3.0.en.html for details."
+msgstr ""
+"Tato aplikace je licencována podle podmínek GNU Public License (GPL) verze 3.\n"
+"Podrobnosti naleznete na adrese https://www.gnu.org/licenses/gpl-3.0.html."
+
+#. • MSG_905
+#.
+#. Keyword for "boot" will be used for search in the Windows Store
+msgid "Boot"
+msgstr ""
+
+#. • MSG_910
+#.
+#. This and subsequent messages will be listed in the 'Features' section of the Windows Store page
+msgid "Format USB, flash card and virtual drives to FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+msgstr "Formátování USB, flash karet a virtuálních jednotek na FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+
+#. • MSG_911
+msgid "Create FreeDOS bootable USB drives"
+msgstr "Vytvoření bootovacích disků USB se systémem FreeDOS"
+
+#. • MSG_912
+msgid "Create bootable drives from bootable ISOs (Windows, Linux, etc.)"
+msgstr "Vytváření bootovacích jednotek ze zaváděcích ISO (Windows, Linux atd.)"
+
+#. • MSG_913
+msgid "Create bootable drives from bootable disk images, including compressed ones"
+msgstr "Vytváření zaváděcích jednotek ze zaváděcích obrazů disků, včetně komprimovaných"
+
+#. • MSG_914
+msgid "Create BIOS or UEFI bootable drives, including UEFI bootable NTFS"
+msgstr "Vytvořte zaváděcí jednotky BIOS nebo UEFI, včetně zaváděcích souborů NTFS UEFI"
+
+#. • MSG_915
+msgid "Create 'Windows To Go' drives"
+msgstr "Vytvoření jednotek \"Windows To Go"
+
+#. • MSG_916
+msgid "Create Windows 11 installation drives for PCs that don't have TPM or Secure Boot"
+msgstr "Vytvoření instalačních jednotek systému Windows 11 pro počítače bez čipu TPM nebo Secure Boot"
+
+#. • MSG_917
+msgid "Create persistent Linux partitions"
+msgstr "Vytvoření trvalých oddílů systému Linux"
+
+#. • MSG_918
+msgid "Create VHD/DD images of the selected drive"
+msgstr "Vytvoření obrazů VHD/DD z vybrané jednotky"
+
+#. • MSG_919
+msgid "Compute MD5, SHA-1, SHA-256 and SHA-512 checksums of the selected image"
+msgstr "Výpočet kontrolních součtů MD5, SHA-1, SHA-256 a SHA-512 vybraného obrazu"
+
+#. • MSG_920
+msgid "Perform bad blocks checks, including detection of \"fake\" flash drives"
+msgstr "Provést kontrolu vadných bloků, včetně detekce \"falešných\" bloků. flash disky"
+
+#. • MSG_921
+msgid "Download official Microsoft Windows retail ISOs"
+msgstr "Stažení oficiálních souborů ISO systému Microsoft Windows"
+
+#. • MSG_922
+msgid "Download UEFI Shell ISOs"
+msgstr "Stažení souborů UEFI Shell ISO"

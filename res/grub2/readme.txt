@@ -1,8 +1,8 @@
 This directory contains the Grub 2.0 boot records that are used by Rufus
 
 * boot.img and core.img were created from:
-    https://ftp.gnu.org/gnu/grub/grub-2.06.tar.xz
-  on a Debian 10.9 x64 system using the commands:
+  https://gitlab.freedesktop.org/api/v4/projects/26558/packages/generic/source-assets/grub-2.16/grub-2.16.tar.xz
+  on a Debian 13 x64 system using the commands:
     ./autogen.sh
     # --enable-boot-time for Manjaro Linux
     ./configure --disable-nls --enable-boot-time

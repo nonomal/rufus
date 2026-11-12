@@ -1,7 +1,7 @@
 ﻿/*
  * Rufus: The Reliable USB Formatting Utility
  * Poedit <-> rufus.loc conversion utility
- * Copyright © 2018-2019 Pete Batard <pete@akeo.ie>
+ * Copyright © 2018-2026 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,9 +41,9 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Poedit ↔ Rufus loc conversion utility")]
 [assembly: AssemblyCompany("Akeo Consulting")]
 [assembly: AssemblyProduct("Pollock")]
-[assembly: AssemblyCopyright("Copyright © 2018 Pete Batard <pete@akeo.ie>")]
+[assembly: AssemblyCopyright("Copyright © 2018-2024 Pete Batard <pete@akeo.ie>")]
 [assembly: AssemblyTrademark("GNU GPLv3")]
-[assembly: AssemblyVersion("1.3.*")]
+[assembly: AssemblyVersion("1.8.*")]
 
 namespace pollock
 {
@@ -124,7 +124,6 @@ namespace pollock
         private static int download_status;
         private static int console_x_pos;
         private static bool in_progress = false;
-        private static bool in_on_change = false;
         private static double speed = 0.0f;
 
         /// <summary>
@@ -234,7 +233,7 @@ namespace pollock
                             lang.lcid += " " + parts[i];
                         break;
                     case 'a':
-                        // This attribue will be restored manually
+                        // This attribute will be restored manually
                         break;
                     case 'g':
                         comment = null;
@@ -266,8 +265,16 @@ namespace pollock
                         }
                         lang.sections[section_name].Add(new Message(parts[1], parts[2]));
                         // We also maintain global list of Id -> str for convenience
-                        lang.id_to_str.Add(new Id(section_name, (parts[1])), parts[2]);
-                        last_key = parts[1];
+                        try
+                        {
+                            lang.id_to_str.Add(new Id(section_name, (parts[1])), parts[2]);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Error for {parts[1]}: " + e.Message);
+                            continue;
+                        }
+                            last_key = parts[1];
                         if (comment != null)
                         {
                             id = new Id(section_name, last_key);
@@ -300,7 +307,7 @@ namespace pollock
         /// <summary>
         /// Create .po/.pot files from a list of Language elements.
         /// </summary>
-        /// <param name="langs">A lits of Language objects to process.</param>
+        /// <param name="langs">A list of Language objects to process.</param>
         /// <param name="old_en_US">(Optional) A previous version of en-US to use for comparison.</param>
         /// <param name="path">(Optional) The path where the .po/.pot files should be created.</param>
         /// <returns>The number of PO files created.</returns>
@@ -418,6 +425,9 @@ namespace pollock
                         if ((old_en_US != null) && (added_ids.Contains(id) || modified_ids.Contains(id)))
                             writer.WriteLine("#, fuzzy");
                         string msg_str = lang.sections[id.group].Where(x => x.id == id.id).Select(x => x.str).FirstOrDefault();
+                        // Special case for MSG_176, which we need to replace
+                        if (id.group == "MSG" && id.id == "MSG_176")
+                            en_str = "\"English translation: Pete Batard <mailto:pete@akeo.ie>\"";
                         // Special case for MSG_240, which we missed in the last round
                         if (id.group == "MSG" && id.id == "MSG_240" && msg_str == null)
                             writer.WriteLine("#, fuzzy");
@@ -457,7 +467,7 @@ namespace pollock
             bool is_pot = file.EndsWith(".pot");
             bool file_locked = true;
             string[] lines = null;
-            // May get an I/O expection if Poedit is not done
+            // May get an I/O exception if Poedit is not done
             do
             {
                 try
@@ -872,59 +882,15 @@ namespace pollock
             return (response == ConsoleKey.Y);
         }
 
-        // Event handler for FileSystemWatcher. As usual, this is a completely BACKWARDS
-        // implementation by Microsoft that has to be worked around with timers and stuff...
-        private static void OnChanged(object source, FileSystemEventArgs e)
-        {
-            if (in_on_change)
-                return;
-            in_on_change = true;
-            FileInfo file = new FileInfo(e.FullPath);
-            FileStream stream = null;
-            if (file.LastWriteTime >= last_changed.AddMilliseconds(250))
-            {
-                // File may still be locked by Poedit => detect that
-                bool file_locked = true;
-                do
-                {
-                    try
-                    {
-                        stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None);
-                        file_locked = false;
-                    }
-                    catch (IOException)
-                    {
-                        if (cancel_requested)
-                            break;
-                        Thread.Sleep(100);
-                    }
-                    finally
-                    {
-                        if (!file_locked)
-                        {
-                            if (stream != null)
-                                stream.Close();
-                            last_changed = file.LastWriteTime;
-                            Console.Write(file.LastWriteTime.ToLongTimeString() + " - ");
-                            UpdateLocFile(ParsePoFile(e.FullPath));
-                        }
-                    }
-                }
-                while (file_locked);
-            }
-            in_on_change = false;
-        }
-
         //
         // Main entrypoint.
         //
-        [STAThread]
         static void Main(string[] args)
         {
             // Fix needed for Windows 7 to download from github SSL
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            // Also set the Console width to something that can accomodate us
+            // Also set the Console width to something that can accommodate us
             if (Console.WindowWidth < 100)
                 Console.SetWindowSize(100, Console.WindowHeight);
 
@@ -1135,7 +1101,7 @@ Retry:
             else
             {
                 var old_loc_file = $"rufus-{list[index][2]}.loc";
-                Console.WriteLine($"Note: This language is at v{list[index][2]} but the English base it at v{list[0][2]}.");
+                Console.WriteLine($"Note: This language is at v{list[index][2]} but the English base is at v{list[0][2]}.");
                 Console.Write($"Checking for the presence of '{old_loc_file}' to compute the differences... ");
                 if (File.Exists(old_loc_file))
                 {
@@ -1177,23 +1143,15 @@ Retry:
             if (maintainer_mode)
                 goto Exit;
 
-            // Watch for file modifications
-            FileSystemWatcher watcher = new FileSystemWatcher();
-            watcher.Path = app_dir;
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite;
-            watcher.Filter = po_file;
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.EnableRaisingEvents = true;
-
             // Open the file in PoEdit if we can
-            var poedit = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Poedit\Poedit.exe";
+            var poedit = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\Poedit\Poedit.exe";
             if (File.Exists(poedit))
             {
                 Console.WriteLine();
                 //                Console.WriteLine("Please press any key to launch Poedit and edit the PO file.");
                 Console.WriteLine("*************************************************************************************");
                 Console.WriteLine($"* The {list[index][0]} translation file ({list[index][1]}) is now ready to be edited in Poedit.");
-                Console.WriteLine("* Please look for entries highlited in orange - they are the ones requiring an update.");
+                Console.WriteLine("* Please look for entries highlighted in orange: they are the ones requiring an update.");
                 Console.WriteLine("*");
                 Console.WriteLine("* Whenever you save your changes in Poedit, a new 'rufus.loc' will be generated so");
                 Console.WriteLine($"* that you can test it with '{rufus_file}' in the same directory.");
@@ -1216,7 +1174,52 @@ Retry:
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 Console.WriteLine("Running Poedit...                                 ");
                 DateTime launch_date = DateTime.Now;
-                process.WaitForExit();
+
+                // Somehow, Palp... I mean, Microsoft broke FileSystemWatcher, so perform our own file system monitoring
+                var info = new FileInfo(po_file);
+                var length = info.Length;
+                var write_time = info.LastWriteTime;
+                var create_time = info.CreationTime;
+                while (!process.WaitForExit(500))
+                {
+                    info = new FileInfo(po_file);
+                    if (info.Length != length || info.LastWriteTime != write_time || info.CreationTime != create_time)
+                    {
+                        FileStream stream = null;
+                        if (info.LastWriteTime >= last_changed.AddMilliseconds(250))
+                        {
+                            // File may still be locked by Poedit => detect that
+                            bool file_locked = true;
+                            do
+                            {
+                                try
+                                {
+                                    stream = info.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+                                    file_locked = false;
+                                }
+                                catch (IOException)
+                                {
+                                    if (cancel_requested)
+                                        break;
+                                    Thread.Sleep(100);
+                                }
+                                finally
+                                {
+                                    if (!file_locked)
+                                    {
+                                        if (stream != null)
+                                            stream.Close();
+                                        last_changed = info.LastWriteTime;
+                                        Console.Write(info.LastWriteTime.ToLongTimeString() + " - ");
+                                        UpdateLocFile(ParsePoFile(info.FullName));
+                                    }
+                                }
+                            }
+                            while (file_locked);
+                        }
+                    }
+                }
+ 
                 Console.WriteLine($"Poedit {((DateTime.Now - launch_date).Milliseconds < 100? "is already running (?)..." : "was closed.")}");
                 // Delete the .mo files which we don't need
                 var dir = new DirectoryInfo(app_dir);
@@ -1233,9 +1236,9 @@ Retry:
 
             if ((list.Count >= 2) && (index >= 0))
             {
-                Process.Start($"mailto:pete@akeo.ie?subject=Rufus {list[index][0]} translation v{list[0][2]} update" +
-                    $"&body=Hi Pete,%0D%0A%0D%0APlease find attached the latest {list[index][0]} translation." +
-                    $"%0D%0A%0D%0A<PLEASE ATTACH '{app_dir}{po_file}' AND REMOVE THIS LINE>" +
+                Process.Start($"mailto:pete@akeo.ie?subject=Rufus%20{list[index][0]}%20translation%20v{list[0][2]}%20update" +
+                    $"&body=Hi%20Pete,%0D%0A%0D%0APlease%20find%20attached%20the%20latest%20{list[index][0]}%20translation." +
+                    $"%0D%0A%0D%0A<PLEASE%20ATTACH%20'{app_dir}{po_file}'%20AND%20REMOVE%20THIS%20LINE>" +
                     $"%0D%0A%0D%0ARegards,");
             }
             return;

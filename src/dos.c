@@ -2,7 +2,7 @@
  * Rufus: The Reliable USB Formatting Utility
  * DOS boot file extraction, from the FAT12 floppy image in diskcopy.dll
  * (MS WinME DOS) or from the embedded FreeDOS resource files
- * Copyright © 2011-2020 Pete Batard <pete@akeo.ie>
+ * Copyright © 2011-2026 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "rufus.h"
 #include "missing.h"
 #include "resource.h"
+#include "msapi_utf8.h"
 
 #include "dos.h"
 
@@ -65,7 +66,6 @@ typedef struct _TIME_FIELDS {
 	short Minute;
 	short Second;
 	short Milliseconds;
-	short Weekday;
 } TIME_FIELDS, *PTIME_FIELDS;
 
 #define ARGUMENT_PRESENT(ArgumentPointer) \
@@ -150,7 +150,8 @@ static void FatDateTimeToSystemTime(PLARGE_INTEGER SystemTime, PFAT_DATETIME Fat
 	}
 
 	/* Fix seconds value that might get beyond the bound */
-	if (TimeFields.Second > 59) TimeFields.Second = 0;
+	if (TimeFields.Second > 59)
+		TimeFields.Second = 0;
 
 	/* Perform conversion to system time if possible */
 	if (!RtlTimeFieldsToTime(&TimeFields, SystemTime)) {
@@ -169,13 +170,13 @@ static BOOL Patch_COMMAND_COM(size_t filestart, size_t filesize)
 {
 	const BYTE expected[8] = { 0x15, 0x80, 0xFA, 0x03, 0x75, 0x10, 0xB8, 0x0E };
 
-	uprintf("Patching COMMAND.COM...\n");
+	uprintf("Patching COMMAND.COM...");
 	if (filesize != 93040) {
-		uprintf("  unexpected file size\n");
+		uprintf("  unexpected file size");
 		return FALSE;
 	}
 	if (memcmp(&DiskImage[filestart+0x650c], expected, sizeof(expected)) != 0) {
-		uprintf("  unexpected binary data\n");
+		uprintf("  unexpected binary data");
 		return FALSE;
 	}
 	DiskImage[filestart+0x6510] = 0xeb;
@@ -186,13 +187,13 @@ static BOOL Patch_IO_SYS(size_t filestart, size_t filesize)
 {
 	const BYTE expected[8] = { 0xFA, 0x80, 0x75, 0x09, 0x8D, 0xB6, 0x99, 0x00 };
 
-	uprintf("Patching IO.SYS...\n");
+	uprintf("Patching IO.SYS...");
 	if (filesize != 116736) {
-		uprintf("  unexpected file size\n");
+		uprintf("  unexpected file size");
 		return FALSE;
 	}
 	if (memcmp(&DiskImage[filestart+0x3a8], expected, sizeof(expected)) != 0) {
-		uprintf("  unexpected binary data\n");
+		uprintf("  unexpected binary data");
 		return FALSE;
 	}
 	DiskImage[filestart+0x3aa] = 0xeb;
@@ -213,7 +214,7 @@ static BOOL ExtractFAT(int entry, const char* path)
 	PDIR_ENTRY dir_entry = (PDIR_ENTRY)&DiskImage[FAT12_ROOTDIR_OFFSET + entry*FAT_BYTES_PER_DIRENT];
 
 	if ((path == NULL) || ((safe_strlen(path) + 14) > sizeof(filename))) {
-		uprintf("invalid path supplied for MS-DOS FAT extraction\n");
+		uprintf("invalid path supplied for MS-DOS FAT extraction");
 		return FALSE;
 	}
 	static_strcpy(filename, path);
@@ -235,8 +236,8 @@ static BOOL ExtractFAT(int entry, const char* path)
 	filestart = (dir_entry->FirstCluster + FAT12_CLUSTER_OFFSET)*FAT12_CLUSTER_SIZE;
 	filesize = dir_entry->FileSize;
 	if ((filestart + filesize) > DiskImageSize) {
-		uprintf("FAT File %s would be out of bounds: %X, %X\n", filename, filestart, filesize);
-		uprintf("%X, %X\n", dir_entry->FirstCluster, dir_entry->FileSize);
+		uprintf("FAT File %s would be out of bounds: %zX, %zX", filename, filestart, filesize);
+		uprintf("%X, %X", dir_entry->FirstCluster, dir_entry->FileSize);
 		return FALSE;
 	}
 
@@ -251,12 +252,12 @@ static BOOL ExtractFAT(int entry, const char* path)
 	hFile = CreateFileA(filename, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ,
 		NULL, CREATE_ALWAYS, dir_entry->Attributes, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		uprintf("Unable to create file '%s': %s.\n", filename, WindowsErrorString());
+		uprintf("Unable to create file '%s': %s.", filename, WindowsErrorString());
 		return FALSE;
 	}
 
 	if (!WriteFileWithRetry(hFile, &DiskImage[filestart], (DWORD)filesize, &Size, WRITE_RETRIES)) {
-		uprintf("Could not write file '%s': %s.\n", filename, WindowsErrorString());
+		uprintf("Could not write file '%s': %s.", filename, WindowsErrorString());
 		safe_closehandle(hFile);
 		return FALSE;
 	}
@@ -278,7 +279,7 @@ static BOOL ExtractFAT(int entry, const char* path)
 	}
 
 	safe_closehandle(hFile);
-	uprintf("Successfully wrote '%s' (%d bytes)\n", filename, filesize);
+	uprintf("Successfully wrote '%s' (%zu bytes)", filename, filesize);
 
 	return TRUE;
 }
@@ -287,53 +288,44 @@ static BOOL ExtractFAT(int entry, const char* path)
    image included as resource "BINFILE" in diskcopy.dll */
 static BOOL ExtractMSDOS(const char* path)
 {
-	char dllname[MAX_PATH] = "C:\\Windows\\System32";
 	int i, j;
-	UINT len;
 	BOOL r = FALSE;
-	HMODULE hDLL = NULL;
+	DWORD size = DISKCOPY_SIZE;
+	HANDLE dll_handle = INVALID_HANDLE_VALUE;
+	uint8_t* diskcopy_buffer;
 	char locale_path[MAX_PATH];
+	char diskcopy_dll_path[MAX_PATH];
 	char* extractlist[] = { "MSDOS   SYS", "COMMAND COM", "IO      SYS", "MODE    COM",
 		"KEYB    COM", "KEYBOARDSYS", "KEYBRD2 SYS", "KEYBRD3 SYS", "KEYBRD4 SYS",
 		"DISPLAY SYS", "EGA     CPI", "EGA2    CPI", "EGA3    CPI" };
 
-	if (path == NULL)
+	if (path == NULL || (diskcopy_buffer = malloc(DISKCOPY_SIZE)) == NULL)
 		return FALSE;
+
+	// There should be a diskcopy.dll in the user's AppData directory.
+	// Since we're working with a known copy of diskcopy.dll, just load it in memory
+	// (after locking and validating it) and point to the known disk image resource buffer.
+	static_sprintf(diskcopy_dll_path, "%s\\%s\\diskcopy.dll", app_data_dir, FILES_DIR);
+	dll_handle = CreateFileU(diskcopy_dll_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (dll_handle == INVALID_HANDLE_VALUE || !ReadFile(dll_handle, diskcopy_buffer, size, &size, NULL) ||
+		size != DISKCOPY_SIZE || !BufferMatchesHash(diskcopy_buffer, size, DISKCOPY_HASH)) {
+		uprintf("'diskcopy.dll' was either not found or is invalid");
+		goto out;
+	}
+	DiskImage = &diskcopy_buffer[DISKCOPY_IMAGE_OFFSET];
+	DiskImageSize = DISKCOPY_IMAGE_SIZE;
 
 	// Reduce the visible mess by placing all the locale files into a subdir
 	static_strcpy(locale_path, path);
 	static_strcat(locale_path, "LOCALE\\");
 	CreateDirectoryA(locale_path, NULL);
 
-	len = GetSystemDirectoryA(dllname, sizeof(dllname));
-	if ((len == 0) || (len >= sizeof(dllname))) {
-		uprintf("Unable to get system directory: %s\n", WindowsErrorString());
-		goto out;
-	}
-	static_strcat(dllname, "\\diskcopy.dll");
-	hDLL = LoadLibraryExA(dllname, NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-	if (hDLL == NULL) {
-		uprintf("Unable to open %s: %s\n", dllname, WindowsErrorString());
-		goto out;
-	}
-
-	DiskImageSize = 0;
-	DiskImage = (BYTE*)GetResource(hDLL, MAKEINTRESOURCEA(1), "BINFILE", "disk image", &DiskImageSize, TRUE);
-	if (DiskImage == NULL)
-		goto out;
-
-	// Sanity check
-	if (DiskImageSize < 700*KB) {
-		uprintf("MS-DOS disk image is too small (%d bytes)\n", dllname, DiskImageSize);
-		goto out;
-	}
-
-	for (i=0, r=TRUE; r && i<FAT_FN_DIR_ENTRY_LAST; i++) {
-		if (DiskImage[FAT12_ROOTDIR_OFFSET + i*FAT_BYTES_PER_DIRENT] == FAT_DIRENT_DELETED)
+	for (i = 0, r = TRUE; r && i < FAT_FN_DIR_ENTRY_LAST; i++) {
+		if (DiskImage[FAT12_ROOTDIR_OFFSET + i * FAT_BYTES_PER_DIRENT] == FAT_DIRENT_DELETED)
 			continue;
-		for (j=0; r && j<ARRAYSIZE(extractlist); j++) {
-			if (memcmp(extractlist[j], &DiskImage[FAT12_ROOTDIR_OFFSET + i*FAT_BYTES_PER_DIRENT], 8+3) == 0) {
-				r = ExtractFAT(i, (j<3)?path:locale_path);
+		for (j = 0; r && j < ARRAYSIZE(extractlist); j++) {
+			if (memcmp(extractlist[j], &DiskImage[FAT12_ROOTDIR_OFFSET + i * FAT_BYTES_PER_DIRENT], 8 + 3) == 0) {
+				r = ExtractFAT(i, (j < 3) ? path : locale_path);
 				if ((j == 2) || (j == 7) || (j == 12))
 					UpdateProgress(OP_FILE_COPY, -1.0f);
 			}
@@ -343,9 +335,8 @@ static BOOL ExtractMSDOS(const char* path)
 		r = SetDOSLocale(path, FALSE);
 
 out:
-	if (hDLL != NULL)
-		FreeLibrary(hDLL);
-	safe_free(DiskImage);
+	safe_closehandle(dll_handle);
+	safe_free(diskcopy_buffer);
 	return r;
 }
 
@@ -366,12 +357,12 @@ BOOL ExtractFreeDOS(const char* path)
 		IDR_FD_EGA17_CPX, IDR_FD_EGA18_CPX };
 	char filename[MAX_PATH], locale_path[MAX_PATH];
 	BYTE* res_data;
-	DWORD res_size, Size;
+	DWORD res_size;
 	HANDLE hFile;
 	int i;
 
 	if ((path == NULL) || ((safe_strlen(path) + 14) > sizeof(filename))) {
-		uprintf("invalid path supplied for FreeDOS extraction\n");
+		uprintf("invalid path supplied for FreeDOS extraction");
 		return FALSE;
 	}
 
@@ -380,21 +371,21 @@ BOOL ExtractFreeDOS(const char* path)
 	static_strcat(locale_path, "LOCALE\\");
 	CreateDirectoryA(locale_path, NULL);
 
-	for (i=0; i<ARRAYSIZE(res_name); i++) {
+	for (i = 0; i < ARRAYSIZE(res_name); i++) {
 		res_data = (BYTE*)GetResource(hMainInstance, MAKEINTRESOURCEA(res_id[i]), _RT_RCDATA, res_name[i], &res_size, FALSE);
 
-		static_strcpy(filename, ((i<2)?path:locale_path));
+		static_strcpy(filename, ((i<2) ? path : locale_path));
 		static_strcat(filename, res_name[i]);
 
 		hFile = CreateFileA(filename, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ, NULL,
 			CREATE_ALWAYS, (i<2)?(FILE_ATTRIBUTE_HIDDEN|FILE_ATTRIBUTE_SYSTEM):FILE_ATTRIBUTE_NORMAL, NULL);
 		if ((hFile == NULL) || (hFile == INVALID_HANDLE_VALUE)) {
-			uprintf("Unable to create file '%s': %s.\n", filename, WindowsErrorString());
+			uprintf("Unable to create file '%s': %s.", filename, WindowsErrorString());
 			return FALSE;
 		}
 
-		if (!WriteFileWithRetry(hFile, res_data, res_size, &Size, WRITE_RETRIES)) {
-			uprintf("Could not write file '%s': %s.\n", filename, WindowsErrorString());
+		if (!WriteFileWithRetry(hFile, res_data, res_size, NULL, WRITE_RETRIES)) {
+			uprintf("Could not write file '%s': %s.", filename, WindowsErrorString());
 			safe_closehandle(hFile);
 			return FALSE;
 		}
@@ -403,7 +394,7 @@ BOOL ExtractFreeDOS(const char* path)
 		// thus we would need to have a separate header with each file's timestamps
 
 		safe_closehandle(hFile);
-		uprintf("Successfully wrote '%s' (%d bytes)\n", filename, res_size);
+		uprintf("Successfully wrote '%s' (%d bytes)", filename, res_size);
 
 		if ((i == 4) || (i == 10) || (i == 16) || (i == 22) || (i == ARRAYSIZE(res_name)-1))
 			UpdateProgress(OP_FILE_COPY, -1.0f);

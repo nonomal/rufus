@@ -60,7 +60,7 @@ DWORD M_NTFSSECT_API NtfsSectGetFileVcnExtent(
       return ERROR_INVALID_PARAMETER;
 
     input.StartingVcn = *Vcn;
-    DeviceIoControl(
+    (void)DeviceIoControl(
         File,
         FSCTL_GET_RETRIEVAL_POINTERS,
         &input,
@@ -126,10 +126,10 @@ static DWORD NtfsSectGetVolumeHandle(
         M_ERR("Unable to open volume handle!");
         goto err_handle;
       }
+    CloseHandle(VolumeInfo->Handle);
 
     return ERROR_SUCCESS;
 
-    CloseHandle(VolumeInfo->Handle);
     err_handle:
 
     return rc;

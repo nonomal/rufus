@@ -1,9 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: 3.14\n"
+"Project-Id-Version: 4.14\n"
 "Report-Msgid-Bugs-To: pete@akeo.ie\n"
-"POT-Creation-Date: 2021-04-20 01:27+0900\n"
-"PO-Revision-Date: 2021-04-27 23:31+0900\n"
+"POT-Creation-Date: 2026-04-03 17:56+0900\n"
+"PO-Revision-Date: 2026-04-10 21:59+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,9 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Rufus-LanguageName: Japanese (日本語)\n"
 "X-Rufus-LCID: 0x0411\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.9\n"
 
 #. • IDD_DIALOG → IDS_DRIVE_PROPERTIES_TXT
 msgid "Drive Properties"
@@ -54,13 +54,11 @@ msgstr "USB 接続の HDD を一覧表示"
 msgid "Add fixes for old BIOSes (extra partition, align, etc.)"
 msgstr "古い BIOS のために修正を追加 (パーティションの拡張、並び替え、その他)"
 
-#. • IDD_DIALOG → IDC_RUFUS_MBR
+#. • IDD_DIALOG → IDC_UEFI_MEDIA_VALIDATION
 #.
-#. 'MBR': See http://en.wikipedia.org/wiki/Master_boot_record
-#. Rufus can install it's own custom MBR (the Rufus MBR), which also allows users to
-#. specify a custom disk ID for the BIOS. The tooltip for this control is MSG_167.
-msgid "Use Rufus MBR with BIOS ID"
-msgstr "BIOS ID で Rufus の MBR を作成"
+#. It is acceptable to drop the "runtime" if you are running out of space
+msgid "Enable runtime UEFI media validation"
+msgstr "ランタイムUEFIメディア検証を有効化"
 
 #. • IDD_DIALOG → IDS_FORMAT_OPTIONS_TXT
 msgid "Format Options"
@@ -310,7 +308,7 @@ msgstr ""
 
 #. • MSG_025
 #.
-#. *Short* version of the pentabyte size suffix
+#. *Short* version of the petabyte size suffix
 msgid "PB"
 msgstr ""
 
@@ -484,7 +482,6 @@ msgid "Could not open media. It may be in use by another process. Please re-plug
 msgstr "メディアを開けませんでした。他のプログラムで使われている可能性があります。もう一度接続し、やり直してください。"
 
 #. • MSG_068
-#, fuzzy
 msgid "Could not partition drive."
 msgstr "ドライブのパーティション設定中にエラーが発生しました。"
 
@@ -666,7 +663,6 @@ msgid "Filesystem limitation"
 msgstr "ファイル システム制限"
 
 #. • MSG_100
-#, fuzzy
 msgid "This ISO image contains a file larger than 4 GB, which is more than the maximum size allowed for a FAT or FAT32 file system."
 msgstr "ISO イメージに 4 GB より大きなファイルがあります。FAT、FAT32 ファイル システムで使用可能な最大のサイズを超えています。"
 
@@ -851,7 +847,7 @@ msgstr "保存領域なし"
 
 #. • MSG_125
 #.
-#. Tooltips used for the peristence size slider and edit control
+#. Tooltips used for the persistence size slider and edit control
 msgid "Set the size of the persistent partition for live USB media. Setting the size to 0 disables the persistent partition."
 msgstr "ライブ USB メディアの保存領域のサイズを設定します。 サイズを 0 に設定すると保存領域が無効になります。保存領域は「Persistent パーティション」「Persistence 機能」とも言われます。"
 
@@ -893,13 +889,13 @@ msgstr "別のプログラムまたはプロセスがこのドライブにアク
 
 #. • MSG_133
 msgid ""
-"Rufus has detected that you are attempting to create a Windows To Go media based on a 1809 ISO.\n"
+"Rufus has detected that you are attempting to create a 'Windows To Go' media based on a 1809 ISO.\n"
 "\n"
 "Because of a *MICROSOFT BUG*, this media will crash during Windows boot (Blue Screen Of Death), unless you manually replace the file 'WppRecorder.sys' with a 1803 version.\n"
 "\n"
 "Also note that the reason Rufus cannot automatically fix this for you is that 'WppRecorder.sys' is a Microsoft copyrighted file, so we cannot legally embed a copy of the file in the application..."
 msgstr ""
-"1809 バージョンの ISO を使用して Windows To Go のメディアを作成しようとしていることを検出しました。\n"
+"Rufusは1809 バージョンの ISO を使用して Windows To Go のメディアを作成しようとしていることを検出しました。\n"
 "\n"
 "このメディアは、“WppRecorder.sys” を 1803 バージョンのファイルに手動で置き換えない限り、Windowsのブート中にクラッシュ (ブルースクリーン) します。これは * Microsoftのバグ * によるものです。\n"
 "\n"
@@ -952,7 +948,7 @@ msgid "Download using a browser"
 msgstr "ブラウザーを使ってダウンロードする"
 
 #. • MSG_144
-msgid "Temporarily banned by Microsoft for requesting too many downloads - Please try again later..."
+msgid "Download of Windows ISOs is unavailable due to Microsoft having altered their website to prevent it."
 msgstr "リクエストが多すぎたため Microsoft が一時的にダウンロードを禁止しました - しばらくしてからもう一度お試しください..."
 
 #. • MSG_145
@@ -1048,16 +1044,8 @@ msgid "Check this box to allow the display of international labels and set a dev
 msgstr "機能拡張されたラベルの表示とデバイス アイコンの設定を有効するにはこのチェック ボックスをオンにします。“autorun.inf” を作成します。"
 
 #. • MSG_167
-msgid "Install an MBR that allows boot selection and can masquerade the BIOS USB drive ID"
-msgstr "ブート選択が可能で BIOS の USB ドライブ ID に見えるよう偽装された MBR をインストールします。"
-
-#. • MSG_168
-msgid ""
-"Try to masquerade first bootable USB drive (usually 0x80) as a different disk.\n"
-"This should only be necessary if you install Windows XP and have more than one disk."
-msgstr ""
-"最優先でブートする USB ドライブ (通常は 0x80) を別のディスクとして偽装します。\n"
-"Windows XP をインストールして複数のディスクを使用する場合にのみ必要です。"
+msgid "Install a UEFI bootloader, that will perform MD5Sum file validation of the media"
+msgstr "MD5チェックサム検証を行うUEFIブートローダーをインストールします。"
 
 #. • MSG_169
 msgid ""
@@ -1100,7 +1088,7 @@ msgstr "バージョン %d.%d (Build %d)"
 
 #. • MSG_176
 msgid "English translation: Pete Batard <mailto:pete@akeo.ie>"
-msgstr "日本語翻訳: チャンテラ・ジャクソン <mailto:chantella-eng@live.com> \\line校正、翻訳: Tiryoh <mailto:tiryoh+rufus@gmail.com>"
+msgstr "日本語翻訳:\\line• チャンテラ・ジャクソン <mailto:chantella-eng@live.com>\\line• Tiryoh <mailto:tiryoh+rufus@gmail.com>\\line• 五月雨 <mailto:samidare3desu@gmail.com>"
 
 #. • MSG_177
 msgid "Report bugs or request enhancements at:"
@@ -1166,13 +1154,13 @@ msgstr "互換性のないドライブが検出されました。"
 #.
 #. Used in MSG_235
 msgid "Write pass"
-msgstr "書き込みをパスしました。"
+msgstr "書き込み中"
 
 #. • MSG_192
 #.
 #. Used in MSG_235
 msgid "Read pass"
-msgstr "読み出しをパスしました。"
+msgstr "読み出し中"
 
 #. • MSG_193
 msgid "Downloaded %s"
@@ -1207,6 +1195,10 @@ msgstr "標準以外のセクタサイズが検出されました。"
 #. • MSG_198
 msgid "'Windows To Go' can only be installed on a GPT partitioned drive if it has the FIXED attribute set. The current drive was not detected as FIXED."
 msgstr "“FIXED” 属性が設定されている場合に限り、 GPT パーティションのドライブに Windows To Go をインストールすることができます。 現在のドライブは FIXED として検出されませんでした。"
+
+#. • MSG_199
+msgid "This feature is not available on this platform."
+msgstr "この機能は、このプラットフォームでは利用できません。"
 
 #. • MSG_201
 msgid "Cancelling - Please wait..."
@@ -1294,7 +1286,6 @@ msgstr "%s を保存しました。"
 #. • MSG_217
 #.
 #. Formatting status
-#, fuzzy
 msgid "Formatting: %s"
 msgstr "フォーマット中: %s"
 
@@ -1315,7 +1306,6 @@ msgid "Formatting (%s) - estimated duration %d:%02d..."
 msgstr "フォーマット中 (%s) - 残り約 %d:%02d..."
 
 #. • MSG_221
-#, fuzzy
 msgid "Setting label (%s)..."
 msgstr "ラベル作成中 (%s)..."
 
@@ -1346,12 +1336,10 @@ msgid "Closing existing volume..."
 msgstr "ボリュームを閉じています..."
 
 #. • MSG_228
-#, fuzzy
 msgid "Writing Master Boot Record..."
 msgstr "マスター ブート レコードを書き込んでいます..."
 
 #. • MSG_229
-#, fuzzy
 msgid "Writing Partition Boot Record..."
 msgstr "パーティション ブート レコードを書き込んでいます..."
 
@@ -1360,12 +1348,10 @@ msgid "Copying DOS files..."
 msgstr "DOS ファイルをコピー中..."
 
 #. • MSG_231
-#, fuzzy
 msgid "Copying ISO files: %s"
 msgstr "ISO ファイルをコピー中: %s"
 
 #. • MSG_232
-#, fuzzy
 msgid "Win7 EFI boot setup (%s)..."
 msgstr "Win7 EFI ブート セットアップ中 (%s)..."
 
@@ -1385,7 +1371,7 @@ msgstr "Syslinux %s をインストール中..."
 #. Bad blocks status. Example: "Bad Blocks: Write pass 1/2 - 12.34% (0/0/1 errors)"
 #. See MSG_191 & MSG_192 for "Write pass"/"Read pass" translation.
 msgid "Bad Blocks: %s %d/%d - %0.2f%% (%d/%d/%d errors)"
-msgstr "不良ブロック: %s %d/%d - %0.2f%% (エラー: %d/%d/%d)"
+msgstr "不良ブロック: %s %d/%d パス - %0.2f%% (エラー: %d/%d/%d)"
 
 #. • MSG_236
 msgid "Bad Blocks: Testing with random pattern"
@@ -1402,7 +1388,6 @@ msgid "Partitioning (%s)..."
 msgstr "パーティション分割中 (%s)..."
 
 #. • MSG_239
-#, fuzzy
 msgid "Deleting partitions (%s)..."
 msgstr "パーティション削除中 (%s)..."
 
@@ -1419,7 +1404,6 @@ msgstr ""
 "ダウンロードは削除されます。詳しくはログを確認してください。"
 
 #. • MSG_241
-#, fuzzy
 msgid "Downloading: %s"
 msgstr "ダウンロード中: %s"
 
@@ -1502,7 +1486,6 @@ msgid "NTFS compression"
 msgstr "NTFS 圧縮"
 
 #. • MSG_261
-#, fuzzy
 msgid "Writing image: %s"
 msgstr "イメージを書き込み中: %s"
 
@@ -1531,7 +1514,6 @@ msgid "Dual UEFI/BIOS mode"
 msgstr "デュアル UEFI/BIOS モード"
 
 #. • MSG_267
-#, fuzzy
 msgid "Applying Windows image: %s"
 msgstr "Windows イメージを適用中: %s"
 
@@ -1548,7 +1530,6 @@ msgid "USB debug"
 msgstr "USB デバッグ"
 
 #. • MSG_271
-#, fuzzy
 msgid "Computing image checksums: %s"
 msgstr "イメージのチェックサムを計算中: %s"
 
@@ -1561,7 +1542,6 @@ msgid "Change the application language"
 msgstr "アプリケーションの使用言語を変更します。"
 
 #. • MSG_274
-#, fuzzy
 msgid "%s image detected"
 msgstr "%s イメージの検出"
 
@@ -1633,7 +1613,6 @@ msgstr ""
 "このファイルを実行しますか?"
 
 #. • MSG_286
-#, fuzzy
 msgid "Zeroing drive: %s"
 msgstr "“0” をドライブへ書き込み初期化中: %s"
 
@@ -1666,8 +1645,12 @@ msgid "Unsupported Windows version"
 msgstr "サポートされていない Windows のバージョンです。"
 
 #. • MSG_294
-msgid "This version of Windows is no longer supported by Rufus."
-msgstr "このバージョンの Windows は Rufus のサポート対象外となりました。"
+msgid ""
+"This version of Windows is no longer supported by Rufus.\n"
+"The last version of Rufus compatible with this platform is v%d.%d."
+msgstr ""
+"このバージョンの Windows は Rufus のサポート対象外となりました。\n"
+"このプラットフォームと互換性のあるRufusの最終バージョンはv%d.%dです。"
 
 #. • MSG_295
 msgid "Warning: Unofficial version"
@@ -1732,20 +1715,18 @@ msgid "Create a disk image of the selected device"
 msgstr "選択したデバイスのディスク イメージを作成します。"
 
 #. • MSG_305
-msgid "Use this option to indicate whether you want to use this device to install Windows on another disk, or if you want to run Windows directly from this drive (Windows To Go)."
+msgid "Use this option to indicate if you plan to install Windows to a different disk, or if you want to run Windows directly from this drive (Windows To Go)."
 msgstr "このデバイスを使用して別のディスクに Windows をインストールしたい場合、またはこのドライブから Windows を直接実行 (Windows To Go) したい場合にこのオプションを使用します。"
 
 #. • MSG_306
 #.
 #. You can see this status message by pressing <Ctrl>-<Alt>-<Z> and then selecting START.
 #. It's the same as MSG_286 but with a process that *may* be faster, hence the name.
-#, fuzzy
 msgid "Fast-zeroing drive: %s"
 msgstr "ドライブを高速完全消去中: %s"
 
 #. • MSG_307
-#, fuzzy
-msgid "This may take a while"
+msgid "this may take a while"
 msgstr "時間がかかることがあります"
 
 #. • MSG_308
@@ -1813,3 +1794,340 @@ msgid ""
 msgstr ""
 "選択されたイメージはハイブリッド ISO 形式ですが、 ISO イメージ モード / ファイル コピー モードと互換性がありません。\n"
 "そのため、書き込みには DD イメージ モードが適用されます。"
+
+#. • MSG_322
+msgid "Unable to open or read '%s'"
+msgstr "'%s'の読み取り"
+
+#. • MSG_323
+msgid "Apply SkuSiPolicy.p7b on installation (See KB5042562)"
+msgstr "インストール時にSkuSiPolicy.p7bを適応する(KB5042562を参照)"
+
+#. • MSG_324
+msgid "QoL improvements (Don't force Copilot, OneDrive, Outlook, Fast Startup, etc.)"
+msgstr "利便性向上パッチ(Microsoftの各種ソフトウェアの無効化)"
+
+#. • MSG_325
+msgid "Applying Windows customization: %s"
+msgstr "Windowsカスタムを適応: %s"
+
+#. • MSG_326
+msgid "Applying user options..."
+msgstr "ユーザー設定を適応中..."
+
+#. • MSG_327
+msgid "Windows User Experience"
+msgstr "Windows ユーザーエクスペリエンス"
+
+#. • MSG_328
+msgid "Customize Windows installation?"
+msgstr "インストーラーをカスタムしますか?"
+
+#. • MSG_329
+msgid "Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0"
+msgstr "4GB以上のRAM、セキュアブート及びTPM 2.0の要件を削除"
+
+#. • MSG_330
+msgid "Remove requirement for an online Microsoft account"
+msgstr "オンラインアカウントの要件を削除"
+
+#. • MSG_331
+msgid "Disable data collection (Skip privacy questions)"
+msgstr "データ収集を無効化"
+
+#. • MSG_332
+msgid "Prevent Windows To Go from accessing internal disks"
+msgstr "Windows To Goへの内部ディスクからのアクセスを防ぐ"
+
+#. • MSG_333
+msgid "Create a local account with username:"
+msgstr "ローカルアカウントを次の名前で作成:"
+
+#. • MSG_334
+msgid "Set regional options to the same values as this user's"
+msgstr "地域設定をこのユーザーと同じものに設定"
+
+#. • MSG_335
+msgid "Disable BitLocker automatic device encryption"
+msgstr "BitLocker 自動デバイス暗号化を無効化します。"
+
+#. • MSG_336
+msgid "Persistent log"
+msgstr "永続ログ"
+
+#. • MSG_337
+msgid ""
+"An additional file ('%s') must be downloaded from Microsoft to use this feature:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The file will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"この機能を使用するには、Microsoft から追加のファイル ('%s') をダウンロードする必要があります:\n"
+"- はいを選択すると、インターネットに接続しダウンロードします。\n"
+"- いいえを選択すると、キャンセルします\n"
+"\n"
+"注意:ファイルはアプリケーションのディレクトリへダウンロードされ、今後自動的に再利用されます。"
+
+#. • MSG_338
+msgid "Revoked UEFI bootloader detected"
+msgstr "無効なUEFIブートローダーが検出されました。"
+
+#. • MSG_339
+msgid ""
+"Rufus detected that the ISO you have selected contains a UEFI bootloader that has been revoked and that will produce %s, when Secure Boot is enabled on a fully up to date UEFI system.\n"
+"\n"
+"- If you obtained this ISO image from a non reputable source, you should consider the possibility that it might contain UEFI malware and avoid booting from it.\n"
+"- If you obtained it from a trusted source, you should try to locate a more up to date version, that will not produce this warning."
+msgstr ""
+"Rufusは選択されたISOイメージが無効なUEFIブートローダーを含み、最新のUEFIでセキュアブートが有効である場合%sを引き起こすことを検出しました。\n"
+"\n"
+"- このファイルが信頼できないソースから入手されたものであれば、マルウェア混入の可能性があるため起動しないことをお勧めします。\n"
+"- このファイルが信頼できるソースから取得したものであれば、警告が発生しない新しいバージョンを探すことをお勧めします。"
+
+#. • MSG_340
+msgid "a \"Security Violation\" screen"
+msgstr "セキュリティ侵害表示"
+
+#. • MSG_341
+msgid "a Windows Recovery Screen (BSOD) with '%s'"
+msgstr "\"%s\"によるWindowsのブルースクリーン"
+
+#. • MSG_342
+msgid "Compressed VHDX Image"
+msgstr "圧縮されたVHDXイメージ"
+
+#. • MSG_343
+msgid "Uncompressed VHD Image"
+msgstr "圧縮されていないVHDイメージ"
+
+#. • MSG_344
+msgid "Full Flash Update Image"
+msgstr "Full Flash Updateイメージ"
+
+#. • MSG_345
+msgid ""
+"Some additional data must be downloaded from Microsoft to use this functionality:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation"
+msgstr ""
+"この機能を使用するにはMicrosoftから追加のファイルをいくつかダウンロードする必要があります。\n"
+"- はいを選択すると、インターネットに接続しダウンロードします。\n"
+"- いいえを選択すると、キャンセルします"
+
+#. • MSG_346
+msgid "Restrict Windows to S-Mode (INCOMPATIBLE with online account bypass)"
+msgstr "WindowsのSモードを強制する(オンラインアカウント要件の削除と同時に使用できません)"
+
+#. • MSG_347
+msgid "Expert Mode"
+msgstr "エキスパートモード"
+
+#. • MSG_348
+msgid "Extracting archive files: %s"
+msgstr "ファイルを展開中: %s"
+
+#. • MSG_349
+msgid "Use Rufus MBR"
+msgstr "Rufus MBRを使用する"
+
+#. • MSG_350
+msgid "Use 'Windows CA 2023' signed bootloaders (Requires a compatible target PC)"
+msgstr "Windows CA 2023署名のブートローダーを使用する (対応するPCが必要です)"
+
+#. • MSG_351
+msgid "Checking for UEFI bootloader revocation..."
+msgstr "UEFIブートローダーの有効性を確認中..."
+
+#. • MSG_352
+msgid "Checking for UEFI DBX updates..."
+msgstr "UEFI DBXのアップデートをチェック中..."
+
+#. • MSG_353
+msgid "DBX update available"
+msgstr "DBXのアップデートが利用可能です。"
+
+#. • MSG_354
+msgid ""
+"Rufus has found an updated version of the DBX files used to perform UEFI Secure Boot revocation checks. Do you want to download this update?\n"
+"- Select 'Yes' to connect to the Internet and download this content\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The files will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"UEFIセキュアブートの有効性チェックに使用するDBXファイルの新しいバージョンを発見しました。ダウンロードしますか?\n"
+"- はいを選択すると、インターネットに接続しダウンロードします。\n"
+"- いいえを選択すると、キャンセルします\n"
+"\n"
+"注意:ファイルはアプリケーションのディレクトリへダウンロードされ、今後自動的に再利用されます。"
+
+#. • MSG_355
+msgid "⚠SILENTLY⚠ erase disk and install:"
+msgstr "⚠サイレント⚠ ディスクの削除とインストール:"
+
+#. • MSG_356
+msgid ""
+"You have selected to use the \"silent\" Windows installation option.\n"
+"\n"
+"This is an advanced option, reserved for people who want to create media that does not prompt the user during Windows installation and therefore UNCONDITIONALLY ERASES the first detected disk on the target system. If you are not careful, using this option can result in IRREVERSIBLE DATA LOSS!\n"
+"\n"
+"If this is not what you want, please select 'No' to go back and uncheck the option.\n"
+"Otherwise, if you select 'Yes, you agree that the whole responsibility for any data loss will be entirely with YOU."
+msgstr ""
+"Windowsのサイレントインストールオプションを選択しました。\n"
+"\n"
+"これはWindowsのインストールを完全自動化するための高度なオプションであり、システムが最初に検知したディスクを無条件に削除します。操作を誤ると予期せぬデータ喪失を引き起こす可能性があります!\n"
+"\n"
+"このオプションを選択したことによるいかなるデータの喪失も自己責任となることに同意する場合、[はい]を選択してください。\n"
+"同意しない場合は[いいえ]を選択し、このオプションのチェックを外してください。"
+
+#. • MSG_358
+msgid "Unsupported image location"
+msgstr "サポートされていないイメージのロケーション"
+
+#. • MSG_359
+msgid ""
+"You cannot use an image that is located on the target drive, since that drive is going to be completely erased. It's the same thing as trying to saw the branch you are sitting on!\n"
+"\n"
+"Please move the image to a different location and try again."
+msgstr ""
+"ターゲットドライブに配置されたファイルは書き込み時に完全に削除されるため、このファイルを使用することはできません。\n"
+"\n"
+"ファイルを移動し再試行してください。"
+
+#. • MSG_360
+msgid "It is safe to leave this option enabled even if you have a TPM or more RAM, as this option only bypasses the setup requirements and does not actually prevent Windows from using all the hardware available."
+msgstr "このオプションはセットアップの要件のみをスキップし、Windowsの機能には影響を与えないため、TPMや十分なRAMがある場合でも有効化しておくことが推奨されます。"
+
+#. • MSG_361
+msgid "For this option to work, network/Internet MUST be disconnected during installation!"
+msgstr "このオプションを利用するためにはインストール時にネットワークから確実に接続解除されなければなりません!"
+
+#. • MSG_362
+msgid "Automatically answer 'no' to the Windows setup questions relating to the sharing of data with Microsoft, instead of prompting the user."
+msgstr "Windowsのインストール時にMicrosoftのデータ収集オプションに自動的に[いいえ]と回答します。"
+
+#. • MSG_363
+msgid "You should leave this option enabled, unless you are okay with 'Windows To Go' accessing internal disks and silently performing irreversible file system upgrades."
+msgstr "Windows To Goが内部ディスクにアクセスし不可逆なアップグレードを行うことを了承しない限りこのオプションを有効にすることが推奨されます。"
+
+#. • MSG_364
+msgid "Automatically create a local account with the specified user name, using an empty password that will need to be changed on next logon."
+msgstr "指定されたユーザー名で自動的にローカルアカウントを作成します。パスワードは空欄の為、ログイン時に変更が必要です。"
+
+#. • MSG_365
+msgid "Duplicate the regional settings from this PC (keyboard, timezone, currency), instead of prompting the user."
+msgstr "このPCの地域設定(キーボード、タイムゾーン、通貨設定)をコピーすることでユーザー入力を省略します。"
+
+#. • MSG_366
+msgid "Don't encrypt the system disk, unless explicitly requested by the user."
+msgstr "ユーザーの明示的な操作がない限りシステムディスクを暗号化しません。"
+
+#. • MSG_367
+msgid "Use this option only if you know what S-Mode is and understand that your system may be locked into S-Mode even after you completely erase and reinstall Windows."
+msgstr "Sモードの仕組みとWindowsをクリーンインストールしてもSモードが残る可能性を理解している場合のみこのオプションを有効にしてください。"
+
+#. • MSG_368
+msgid "Use this option if the system you plan to install Windows on is using fully up-to-date Secure Boot certificates. If needed, you can look into using 'Mosby' to update your system."
+msgstr "最新のセキュアブート証明でWindowsを使用する場合はこのオプションを有効化してください。必要に応じてMosbyを使ってシステムを更新することもできます。"
+
+#. • MSG_369
+msgid "Use this option if you want to revoke additional potentially unsafe Windows bootloaders, but with the potential of also preventing standard Windows media from booting."
+msgstr "危険な可能性のあるWindowsブートローダーを無効化したい場合このオプションを有効化してください。ただし、通常のWindowsメディアが起動しなくなる可能性があります。"
+
+#. • MSG_370
+msgid "\"Quality of Life\" enhancements: Disable most of the unwanted features Microsoft is trying to force onto end users."
+msgstr "Microsoftが強制する不要な機能の大半を無効化することにより利便性を向上します。"
+
+#. • MSG_371
+msgid "If you use this option, please make sure to disconnect every disk from the target PC, except the one you want to install Windows on, as well as not leave the media plugged into any PC you don't want to erase."
+msgstr "このオプションを使用する場合はWindowsをインストールするディスク以外を全て取り外して、削除しないメディアを残さないでください。"
+
+#. • MSG_900
+#.
+#. The following messages are for the Windows Store listing only and are not used by the application
+msgid "Rufus is a utility that helps format and create bootable USB flash drives, such as USB keys/pendrives, memory sticks, etc."
+msgstr "Rufus (ルーファス) とは、起動可能なUSBフラッシュドライブ（USBメモリなど）を作成したり、フォーマットをするためのソフトウェアです。"
+
+#. • MSG_901
+msgid "Official site: %s"
+msgstr "公式サイト: %s"
+
+#. • MSG_902
+msgid "Source Code: %s"
+msgstr "ソースコード: %s"
+
+#. • MSG_903
+msgid "ChangeLog: %s"
+msgstr "変更履歴: %s"
+
+#. • MSG_904
+#.
+#. The gnu.org website has many translations of the GPL (such as https://www.gnu.org/licenses/gpl-3.0.zh-cn.html, https://www.gnu.org/licenses/gpl-3.0.fr.html)
+#. Please make sure you try to locate the relevant https://www.gnu.org/licenses/gpl-3.0.<LANG-ID>.html for your language and use it here.
+msgid ""
+"This application is licensed under the terms of the GNU Public License (GPL) version 3.\n"
+"See https://www.gnu.org/licenses/gpl-3.0.en.html for details."
+msgstr ""
+"このアプリケーションはGNU Public License (GPL) version 3でライセンスされています。\n"
+"詳細は https://www.gnu.org/licenses/gpl-3.0.ja.html をご覧ください。"
+
+#. • MSG_905
+#.
+#. Keyword for "boot" will be used for search in the Windows Store
+msgid "Boot"
+msgstr "起動"
+
+#. • MSG_910
+#.
+#. This and subsequent messages will be listed in the 'Features' section of the Windows Store page
+msgid "Format USB, flash card and virtual drives to FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+msgstr "USBメモリやSDカード、仮想ドライブをFAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3でフォーマットします。"
+
+#. • MSG_911
+msgid "Create FreeDOS bootable USB drives"
+msgstr "FreeDOSの起動可能ドライブを作成します。"
+
+#. • MSG_912
+msgid "Create bootable drives from bootable ISOs (Windows, Linux, etc.)"
+msgstr "WindowsやLinuxなどのISOファイルから起動可能ドライブを作成します。"
+
+#. • MSG_913
+msgid "Create bootable drives from bootable disk images, including compressed ones"
+msgstr "圧縮済みのものを含むディスクイメージから起動可能ドライブを作成します。"
+
+#. • MSG_914
+msgid "Create BIOS or UEFI bootable drives, including UEFI bootable NTFS"
+msgstr "UEFI:NTFSを含むBIOS及びUEFIで起動可能なドライブを作成します。"
+
+#. • MSG_915
+msgid "Create 'Windows To Go' drives"
+msgstr "Windows To Goドライブを作成します。"
+
+#. • MSG_916
+msgid "Create Windows 11 installation drives for PCs that don't have TPM or Secure Boot"
+msgstr "TPM及びセキュアブート非対応のPC向けのWindows 11インストールドライブを作成します"
+
+#. • MSG_917
+msgid "Create persistent Linux partitions"
+msgstr "記録用Linuxパーティションを作成します。"
+
+#. • MSG_918
+msgid "Create VHD/DD images of the selected drive"
+msgstr "選択されたドライブのVHD/DDイメージを作成します。"
+
+#. • MSG_919
+msgid "Compute MD5, SHA-1, SHA-256 and SHA-512 checksums of the selected image"
+msgstr "選択されたイメージのMD5、SHA-1、SHA-256及びSHA-512チェックサムを計算します。"
+
+#. • MSG_920
+msgid "Perform bad blocks checks, including detection of \"fake\" flash drives"
+msgstr "不良ブロックチェック及び容量詐欺ドライブの検知を行います。"
+
+#. • MSG_921
+msgid "Download official Microsoft Windows retail ISOs"
+msgstr "マイクロソフト公式のWindows ISOをダウンロードします。"
+
+#. • MSG_922
+msgid "Download UEFI Shell ISOs"
+msgstr "UEFIシェルのISOをダウンロードします。"

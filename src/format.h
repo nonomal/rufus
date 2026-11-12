@@ -1,7 +1,7 @@
 /*
  * Rufus: The Reliable USB Formatting Utility
  * Formatting function calls
- * Copyright © 2011-2020 Pete Batard <pete@akeo.ie>
+ * Copyright © 2011-2023 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <stdint.h>
 #include <windows.h>
 #include <winioctl.h>	// for MEDIA_TYPE
 
@@ -109,6 +111,12 @@ typedef BOOLEAN (WINAPI* EnableVolumeCompression_t)(
 	ULONG                CompressionFlags	// FILE_SYSTEM_PROP_FLAG
 );
 
+#define IMG_COMPRESSION_FFU     (BLED_COMPRESSION_MAX)
+#define IMG_COMPRESSION_VHD     (BLED_COMPRESSION_MAX + 1)
+#define IMG_COMPRESSION_VHDX    (BLED_COMPRESSION_MAX + 2)
+
 BOOL WritePBR(HANDLE hLogicalDrive);
 BOOL FormatLargeFAT32(DWORD DriveIndex, uint64_t PartitionOffset, DWORD ClusterSize, LPCSTR FSName, LPCSTR Label, DWORD Flags);
 BOOL FormatExtFs(DWORD DriveIndex, uint64_t PartitionOffset, DWORD BlockSize, LPCSTR FSName, LPCSTR Label, DWORD Flags);
+BOOL FormatPartition(DWORD DriveIndex, uint64_t PartitionOffset, DWORD UnitAllocationSize, USHORT FSType, LPCSTR Label, DWORD Flags);
+DWORD WINAPI FormatThread(void* param);

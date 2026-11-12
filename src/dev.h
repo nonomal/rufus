@@ -1,7 +1,7 @@
 /*
  * Rufus: The Reliable USB Formatting Utility
  * Device detection and enumeration
- * Copyright © 2014-2019 Pete Batard <pete@akeo.ie>
+ * Copyright © 2014-2026 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +21,22 @@
 #include <cfgmgr32.h>
 
 #define USB_SPEED_UNKNOWN			0
-#define USB_SPEED_LOW				1
-#define USB_SPEED_FULL				2
-#define USB_SPEED_HIGH				3
-#define USB_SPEED_SUPER				4
-#define USB_SPEED_SUPER_PLUS		5
-#define USB_SPEED_MAX				6
+#define USB_SPEED_LOW_1_5M			1	// USB 1.0
+#define USB_SPEED_FULL_12M			2	// USB 1.1
+#define USB_SPEED_HIGH_480M			3	// USB 2.0
+#define USB_SPEED_SUPER_5G			4	// USB 3.0
+#define USB_SPEED_SUPER_10G			5	// USB 3.1
+#define USB_SPEED_SUPER_20G			6	// USB 3.2
+#define USB_SPEED_SUPER_40G			7	// USB 4.0
+#define USB_SPEED_SUPER_80G			8	// USB 4.1
+#define USB_SPEED_MAX				9
 
 /* List of the properties we are interested in */
 typedef struct usb_device_props {
-	uint32_t  vid;
-	uint32_t  pid;
-	uint32_t  speed;
-	uint32_t  lower_speed;
+	int32_t  vid;
+	int32_t  pid;
+	uint32_t  current_speed;
+	uint32_t  max_speed;
 	uint32_t  port;
 	BOOLEAN   is_USB;
 	BOOLEAN   is_SCSI;
@@ -46,20 +49,6 @@ typedef struct usb_device_props {
 /*
  * Windows DDK API definitions. Most of it copied from MinGW's includes
  */
-typedef DWORD DEVNODE, DEVINST;
-typedef DEVNODE *PDEVNODE, *PDEVINST;
-typedef DWORD RETURN_TYPE;
-typedef RETURN_TYPE CONFIGRET;
-typedef CHAR *DEVINSTID_A;
-
-#ifndef CM_GETIDLIST_FILTER_PRESENT
-#define CM_GETIDLIST_FILTER_PRESENT                 0x00000100
-#endif
-
-#ifndef FILE_DEVICE_USB
-#define FILE_DEVICE_USB                         FILE_DEVICE_UNKNOWN
-#endif
-
 typedef enum USB_CONNECTION_STATUS {
 	NoDeviceConnected,
 	DeviceConnected,
@@ -77,28 +66,16 @@ typedef enum USB_HUB_NODE {
 	UsbMIParent
 } USB_HUB_NODE;
 
-/* Cfgmgr32.dll interface */
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Device_IDA(DEVINST dnDevInst, CHAR* Buffer, ULONG BufferLen, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Device_ID_List_SizeA(PULONG pulLen, PCSTR pszFilter, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Device_ID_ListA(PCSTR pszFilter, PCHAR Buffer, ULONG BufferLen, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Locate_DevNodeA(PDEVINST pdnDevInst, DEVINSTID_A pDeviceID, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Child(PDEVINST pdnDevInst, DEVINST dnDevInst, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Parent(PDEVINST pdnDevInst, DEVINST dnDevInst, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_Sibling(PDEVINST pdnDevInst, DEVINST dnDevInst, ULONG ulFlags);
-DECLSPEC_IMPORT CONFIGRET WINAPI CM_Get_DevNode_Status(PULONG pulStatus, PULONG pulProblemNumber, DEVINST dnDevInst, ULONG ulFlags);
-// This last one is unknown from MinGW32 and needs to be fetched from the DLL
-PF_TYPE_DECL(WINAPI, CONFIGRET, CM_Get_DevNode_Registry_PropertyA, (DEVINST, ULONG, PULONG, PVOID, PULONG, ULONG));
-
 #define USB_HUB_CYCLE_PORT                        273
 #define USB_GET_NODE_CONNECTION_INFORMATION_EX    274
 #define USB_GET_NODE_CONNECTION_INFORMATION_EX_V2 279
 
 #define IOCTL_USB_HUB_CYCLE_PORT \
-  CTL_CODE(FILE_DEVICE_USB, USB_HUB_CYCLE_PORT, METHOD_BUFFERED, FILE_ANY_ACCESS)
+  CTL_CODE(FILE_DEVICE_UNKNOWN, USB_HUB_CYCLE_PORT, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX \
-  CTL_CODE(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_INFORMATION_EX, METHOD_BUFFERED, FILE_ANY_ACCESS)
+  CTL_CODE(FILE_DEVICE_UNKNOWN, USB_GET_NODE_CONNECTION_INFORMATION_EX, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX_V2 \
-  CTL_CODE(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_INFORMATION_EX_V2, METHOD_BUFFERED, FILE_ANY_ACCESS)
+  CTL_CODE(FILE_DEVICE_UNKNOWN, USB_GET_NODE_CONNECTION_INFORMATION_EX_V2, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 /* Most of the structures below need to be packed */
 #pragma pack(push, 1)
@@ -171,3 +148,47 @@ const GUID GUID_DEVINTERFACE_USB_HUB =
 	{ 0xf18a0e88L, 0xc30c, 0x11d0, {0x88, 0x15, 0x00, 0xa0, 0xc9, 0x06, 0xbe, 0xd8} };
 
 #define DEVID_HTAB_SIZE		257
+
+#ifndef FILE_DEVICE_USB
+#define FILE_DEVICE_USB FILE_DEVICE_UNKNOWN
+#endif
+
+typedef struct _USB_DESCRIPTOR_REQUEST {
+	ULONG ConnectionIndex;
+	struct {
+		UCHAR bmRequest;
+		UCHAR bRequest;
+		USHORT wValue;
+		USHORT wIndex;
+		USHORT wLength;
+	} SetupPacket;
+	UCHAR Data[0];
+} USB_DESCRIPTOR_REQUEST, * PUSB_DESCRIPTOR_REQUEST;
+
+#ifndef USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION
+#define USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION 260
+#endif
+
+#ifndef IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION
+#define IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION CTL_CODE \
+	(FILE_DEVICE_USB, USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#endif
+
+#ifndef USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION
+#define USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION 289
+#endif
+
+#ifndef IOCTL_USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION
+#define IOCTL_USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION CTL_CODE\
+	(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#endif
+
+typedef struct {
+	ULONG ConnectionIndex;
+	ULONG Length;
+	ULONG RxSuperSpeedPlus;
+	ULONG RxLaneCount;
+	ULONG TxSuperSpeedPlus;
+	ULONG TxLaneCount;
+} MY_USB_NODE_CONNECTION_SUPERSPEEDPLUS_INFORMATION;
+

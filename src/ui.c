@@ -1,7 +1,7 @@
 /*
  * Rufus: The Reliable USB Formatting Utility
  * UI-related function calls
- * Copyright © 2018-2021 Pete Batard <pete@akeo.ie>
+ * Copyright © 2018-2024 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 #include "drive.h"
 #include "missing.h"
 #include "resource.h"
+#include "darkmode.h"
 #include "msapi_utf8.h"
 #include "localization.h"
 
@@ -45,6 +46,8 @@
 UINT_PTR UM_LANGUAGE_MENU_MAX = UM_LANGUAGE_MENU;
 HIMAGELIST hUpImageList, hDownImageList;
 extern BOOL use_vds, appstore_version;
+extern int imop_win_sel;
+extern char *unattend_xml_path, *archive_path;
 int update_progress_type = UPT_PERCENT;
 int advanced_device_section_height, advanced_format_section_height;
 // (empty) check box width, (empty) drop down width, button height (for and without dropdown match)
@@ -121,7 +124,7 @@ void GetBasicControlsWidth(HWND hDlg)
 	sz.cy = rc.bottom;
 
 	// TODO: figure out the specifics of each Windows version
-	if (nWindowsVersion == WINDOWS_10) {
+	if (WindowsVersion.Version >= WINDOWS_10) {
 		checkbox_internal_spacing = 10;
 		dropdown_internal_spacing = 13;
 	}
@@ -221,9 +224,8 @@ void GetHalfDropwdownWidth(HWND hDlg)
 		hw = max(hw, GetTextSize(GetDlgItem(hDlg, IDC_TARGET_SYSTEM), msg).cx);
 	}
 
-	// Finally, we must ensure that we'll have enough space for the 2 checkbox controls
+	// Finally, we must ensure that we'll have enough space for the checkbox controls
 	// that end up with a half dropdown
-	hw = max(hw, GetTextWidth(hDlg, IDC_RUFUS_MBR) - sw);
 	hw = max(hw, GetTextWidth(hDlg, IDC_BAD_BLOCKS) - sw);
 
 	// Add the width of a blank dropdown
@@ -349,7 +351,7 @@ void PositionMainControls(HWND hDlg)
 	GetWindowRect(hCtrl, &rc);
 	MapWindowPoints(NULL, hDlg, (POINT*)&rc, 2);
 	advanced_device_section_height = rc.top;
-	hCtrl = GetDlgItem(hDlg, IDC_RUFUS_MBR);
+	hCtrl = GetDlgItem(hDlg, IDC_UEFI_MEDIA_VALIDATION);
 	GetWindowRect(hCtrl, &rc);
 	MapWindowPoints(NULL, hDlg, (POINT*)&rc, 2);
 	advanced_device_section_height = rc.bottom - advanced_device_section_height;
@@ -472,10 +474,10 @@ void PositionMainControls(HWND hDlg)
 		hCtrl = GetDlgItem(hDlg, half_width_ids[i]);
 		GetWindowRect(hCtrl, &rc);
 		MapWindowPoints(NULL, hDlg, (POINT*)&rc, 2);
-		// First 5 controls are on the left handside
+		// First 4 controls are on the left handside
 		// First 2 controls may overflow into separator
 		hPrevCtrl = GetNextWindow(hCtrl, GW_HWNDPREV);
-		SetWindowPos(hCtrl, hPrevCtrl, (i < 5) ? rc.left : mw + hw + sw, rc.top,
+		SetWindowPos(hCtrl, hPrevCtrl, (i < 4) ? rc.left : mw + hw + sw, rc.top,
 			(i <2) ? hw + sw : hw, rc.bottom - rc.top, 0);
 	}
 
@@ -554,26 +556,31 @@ void AdjustForLowDPI(HWND hDlg)
 	InvalidateRect(hDlg, NULL, TRUE);
 }
 
-void SetSectionHeaders(HWND hDlg)
+void SetSectionHeaders(HWND hDlg, HFONT* hFont)
 {
 	RECT rc;
 	HWND hCtrl;
 	SIZE sz;
-	HFONT hf;
 	wchar_t wtmp[128];
 	size_t wlen;
 	int i;
 
 	// Set the section header fonts and resize the static controls accordingly
-	hf = CreateFontA(-MulDiv(14, GetDeviceCaps(GetDC(hMainDialog), LOGPIXELSY), 72), 0, 0, 0,
-		FW_SEMIBOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0, 0, PROOF_QUALITY, 0, "Segoe UI");
+	if (*hFont == NULL) {
+		HDC hDC = GetDC(hMainDialog);
+		*hFont = CreateFontA(-MulDiv(14, GetDeviceCaps(hDC, LOGPIXELSY), 72), 0, 0, 0,
+			FW_SEMIBOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, 0, 0, PROOF_QUALITY, 0, "Segoe UI");
+		safe_release_dc(hMainDialog, hDC);
+	}
 
 	for (i = 0; i < ARRAYSIZE(section_control_ids); i++) {
-		SendDlgItemMessageA(hDlg, section_control_ids[i], WM_SETFONT, (WPARAM)hf, TRUE);
+		SendDlgItemMessageA(hDlg, section_control_ids[i], WM_SETFONT, (WPARAM)*hFont, TRUE);
 		hCtrl = GetDlgItem(hDlg, section_control_ids[i]);
 		memset(wtmp, 0, sizeof(wtmp));
-		GetWindowTextW(hCtrl, wtmp, ARRAYSIZE(wtmp) - 3);
+		GetWindowTextW(hCtrl, wtmp, ARRAYSIZE(wtmp) - 4);
 		wlen = wcslen(wtmp);
+		if_assert_fails(wlen < ARRAYSIZE(wtmp) - 2)
+			break;
 		wtmp[wlen++] = L' ';
 		wtmp[wlen++] = L' ';
 		SetWindowTextW(hCtrl, wtmp);
@@ -776,21 +783,22 @@ void ToggleImageOptions(void)
 	int i, shift = rh;
 
 	has_wintogo = ((boot_type == BT_IMAGE) && (image_path != NULL) && (img_report.is_iso || img_report.is_windows_img) &&
-		(nWindowsVersion >= WINDOWS_8) && (HAS_WINTOGO(img_report)));
+		(WindowsVersion.Version >= WINDOWS_8) && (HAS_WINTOGO(img_report)));
 	has_persistence = ((boot_type == BT_IMAGE) && (image_path != NULL) && (img_report.is_iso) && (HAS_PERSISTENCE(img_report)));
 
 	assert(popcnt8(image_options) <= 1);
 
-	// Keep a copy of the "Image Option" text (so that we don't have to duplicate its transation in the .loc)
+	// Keep a copy of the "Image Option" text (so that we don't have to duplicate its translation in the .loc)
 	if (image_option_txt[0] == 0)
 		GetWindowTextU(GetDlgItem(hMainDialog, IDS_IMAGE_OPTION_TXT), image_option_txt, sizeof(image_option_txt));
 
-	if ( ((has_wintogo) && !(image_options & IMOP_WINTOGO)) ||
-		 ((!has_wintogo) && (image_options & IMOP_WINTOGO)) ) {
+	if (((has_wintogo) && !(image_options & IMOP_WINTOGO)) ||
+		((!has_wintogo) && (image_options & IMOP_WINTOGO))) {
 		image_options ^= IMOP_WINTOGO;
 		if (image_options & IMOP_WINTOGO) {
+			SetWindowTextU(GetDlgItem(hMainDialog, IDS_IMAGE_OPTION_TXT), image_option_txt);
 			// Set the Windows To Go selection in the dropdown
-			IGNORE_RETVAL(ComboBox_SetCurSel(hImageOption, (img_report.is_windows_img || !windows_to_go_selected) ? 0 : 1));
+			IGNORE_RETVAL(ComboBox_SetCurSel(hImageOption, imop_win_sel));
 		}
 	}
 
@@ -833,7 +841,7 @@ void ToggleImageOptions(void)
 // We need to create the small toolbar buttons first so that we can compute their width
 void CreateSmallButtons(HWND hDlg)
 {
-	HIMAGELIST hImageList;
+	HIMAGELIST hSaveImageList, hHashImageList;
 	HICON hIconSave, hIconHash;
 	int icon_offset = 0, i16 = GetSystemMetrics(SM_CXSMICON);
 	TBBUTTON tbToolbarButtons[1];
@@ -847,12 +855,13 @@ void CreateSmallButtons(HWND hDlg)
 
 	hSaveToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, TOOLBAR_STYLE,
 		0, 0, 0, 0, hMainDialog, (HMENU)IDC_SAVE_TOOLBAR, hMainInstance, NULL);
-	hImageList = ImageList_Create(i16, i16, ILC_COLOR32 | ILC_HIGHQUALITYSCALE | ILC_MIRROR, 1, 0);
+	hSaveImageList = ImageList_Create(i16, i16, ILC_COLOR32 | ILC_HIGHQUALITYSCALE | ILC_MIRROR, 1, 0);
 	buffer = GetResource(hMainInstance, MAKEINTRESOURCEA(IDI_SAVE_16 + icon_offset), _RT_RCDATA, "save icon", &bufsize, FALSE);
 	hIconSave = CreateIconFromResourceEx(buffer, bufsize, TRUE, 0x30000, 0, 0, 0);
-	ImageList_AddIcon(hImageList, hIconSave);
+	ChangeIconColor(&hIconSave, 0);
+	ImageList_AddIcon(hSaveImageList, hIconSave);
 	DestroyIcon(hIconSave);
-	SendMessage(hSaveToolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)hImageList);
+	SendMessage(hSaveToolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)hSaveImageList);
 	SendMessage(hSaveToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 	memset(tbToolbarButtons, 0, sizeof(TBBUTTON));
 	tbToolbarButtons[0].idCommand = IDC_SAVE;
@@ -864,12 +873,13 @@ void CreateSmallButtons(HWND hDlg)
 
 	hHashToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, TOOLBAR_STYLE,
 		0, 0, 0, 0, hMainDialog, (HMENU)IDC_HASH_TOOLBAR, hMainInstance, NULL);
-	hImageList = ImageList_Create(i16, i16, ILC_COLOR32 | ILC_HIGHQUALITYSCALE | ILC_MIRROR, 1, 0);
+	hHashImageList = ImageList_Create(i16, i16, ILC_COLOR32 | ILC_HIGHQUALITYSCALE | ILC_MIRROR, 1, 0);
 	buffer = GetResource(hMainInstance, MAKEINTRESOURCEA(IDI_HASH_16 + icon_offset), _RT_RCDATA, "hash icon", &bufsize, FALSE);
 	hIconHash = CreateIconFromResourceEx(buffer, bufsize, TRUE, 0x30000, 0, 0, 0);
-	ImageList_AddIcon(hImageList, hIconHash);
+	ChangeIconColor(&hIconHash, 0);
+	ImageList_AddIcon(hHashImageList, hIconHash);
 	DestroyIcon(hIconHash);
-	SendMessage(hHashToolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)hImageList);
+	SendMessage(hHashToolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)hHashImageList);
 	SendMessage(hHashToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 	memset(tbToolbarButtons, 0, sizeof(TBBUTTON));
 	tbToolbarButtons[0].idCommand = IDC_HASH;
@@ -883,11 +893,15 @@ void CreateSmallButtons(HWND hDlg)
 static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HDC hDC;
+	HPEN hOldPen;
+	HFONT hOldFont;
+	HBRUSH hOldBrush;
 	RECT rc, rc2;
 	PAINTSTRUCT ps;
 	SIZE size;
 	LONG full_right;
 	wchar_t winfo[128];
+	COLORREF background_color, text_color, inverted_text_color, border_color;
 	static BOOL marquee_mode = FALSE;
 	static uint32_t pos = 0, min = 0, max = 0xFFFF;
 	static COLORREF color = PROGRESS_BAR_NORMAL_COLOR;
@@ -950,14 +964,18 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 
 	case WM_PAINT:
 		hDC = BeginPaint(hCtrl, &ps);
+		background_color = is_darkmode_enabled ? DARKMODE_NORMAL_CONTROL_BACKGROUND_COLOR : PROGRESS_BAR_BACKGROUND_COLOR;
+		text_color = is_darkmode_enabled ? PROGRESS_BAR_INVERTED_TEXT_COLOR : PROGRESS_BAR_NORMAL_TEXT_COLOR;
+		inverted_text_color = is_darkmode_enabled ? PROGRESS_BAR_NORMAL_TEXT_COLOR : PROGRESS_BAR_INVERTED_TEXT_COLOR;
+		border_color = is_darkmode_enabled ? DARKMODE_NORMAL_CONTROL_EDGE_COLOR : PROGRESS_BAR_BOX_COLOR;
 		GetClientRect(hCtrl, &rc);
 		rc2 = rc;
 		InflateRect(&rc, -1, -1);
-		SelectObject(hDC, GetStockObject(DC_PEN));
-		SelectObject(hDC, GetStockObject(NULL_BRUSH));
+		hOldPen = (HPEN)SelectObject(hDC, GetStockObject(DC_PEN));
+		hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
 		// TODO: Handle SetText message so we can avoid this call
 		GetWindowTextW(hProgress, winfo, ARRAYSIZE(winfo));
-		SelectObject(hDC, hInfoFont);
+		hOldFont = (hInfoFont != NULL) ? (HFONT)SelectObject(hDC, hInfoFont) : NULL;
 		GetTextExtentPoint32(hDC, winfo, (int)wcslen(winfo), &size);
 		if (size.cx > rc.right)
 			size.cx = rc.right;
@@ -968,7 +986,7 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 			// Optional first segment
 			if (pos + ((max - min) / 5) > max) {
 				rc.right = MulDiv(pos + ((max - min) / 5) - max, rc.right, max - min);
-				SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
+				SetTextColor(hDC, inverted_text_color);
 				SetBkColor(hDC, color);
 				ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 					ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
@@ -978,8 +996,8 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 			// Optional second segment
 			if (pos > min) {
 				rc.right = MulDiv(pos - min, rc.right, max - min);
-				SetTextColor(hDC, PROGRESS_BAR_NORMAL_TEXT_COLOR);
-				SetBkColor(hDC, PROGRESS_BAR_BACKGROUND_COLOR);
+				SetTextColor(hDC, text_color);
+				SetBkColor(hDC, background_color);
 				ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 					ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 				rc.left = rc.right;
@@ -987,14 +1005,14 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 			}
 			// Second to last segment
 			rc.right = MulDiv(pos - min + ((max - min) / 5), rc.right, max - min);
-			SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
+			SetTextColor(hDC, inverted_text_color);
 			SetBkColor(hDC, color);
 			ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 				ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 		} else {
 			// First segment
 			rc.right = (pos > min) ? MulDiv(pos - min, rc.right, max - min) : rc.left;
-			SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
+			SetTextColor(hDC, inverted_text_color);
 			SetBkColor(hDC, color);
 			ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 				ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
@@ -1002,13 +1020,17 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 		// Last segment
 		rc.left = rc.right;
 		rc.right = full_right;
-		SetTextColor(hDC, PROGRESS_BAR_NORMAL_TEXT_COLOR);
-		SetBkColor(hDC, PROGRESS_BAR_BACKGROUND_COLOR);
+		SetTextColor(hDC, text_color);
+		SetBkColor(hDC, background_color);
 		ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 			ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 		// Bounding rectangle
-		SetDCPenColor(hDC, PROGRESS_BAR_BOX_COLOR);
+		SetDCPenColor(hDC, border_color);
 		Rectangle(hDC, rc2.left, rc2.top, rc2.right, rc2.bottom);
+		if (hOldFont != NULL)
+			SelectObject(hDC, hOldFont);
+		SelectObject(hDC, hOldPen);
+		SelectObject(hDC, hOldBrush);
 		EndPaint(hCtrl, &ps);
 		return (INT_PTR)TRUE;
 	}
@@ -1047,9 +1069,9 @@ void CreateAdditionalControls(HWND hDlg)
 
 	// Fetch the up and down expand icons for the advanced options toolbar
 	hDll = GetLibraryHandle("ComDlg32");
-	hIconDown = (HICON)LoadImage(hDll, MAKEINTRESOURCE(577), IMAGE_ICON, s16, s16, LR_DEFAULTCOLOR | LR_SHARED);
-	hIconUp = (HICON)LoadImage(hDll, MAKEINTRESOURCE(578), IMAGE_ICON, s16, s16, LR_DEFAULTCOLOR | LR_SHARED);
-	// Fallback to using Shell32 if we can't locate the icons we want in ComDlg32
+	hIconDown = (HICON)LoadImage(hDll, MAKEINTRESOURCE(is_darkmode_enabled ? 579 : 577), IMAGE_ICON, s16, s16, LR_DEFAULTCOLOR | LR_SHARED);
+	hIconUp = (HICON)LoadImage(hDll, MAKEINTRESOURCE(is_darkmode_enabled ? 580 : 578), IMAGE_ICON, s16, s16, LR_DEFAULTCOLOR | LR_SHARED);
+	// Fallback to using Shell32 if we can't locate the icons we want in ComDlg32 (Windows 8)
 	hDll = GetLibraryHandle("Shell32");
 	if (hIconUp == NULL)
 		hIconUp = (HICON)LoadImage(hDll, MAKEINTRESOURCE(16749), IMAGE_ICON, s16, s16, LR_DEFAULTCOLOR | LR_SHARED);
@@ -1066,7 +1088,7 @@ void CreateAdditionalControls(HWND hDlg)
 	hAdvancedDeviceToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, TOOLBAR_STYLE,
 		0, 0, 0, 0, hMainDialog, (HMENU)IDC_ADVANCED_DEVICE_TOOLBAR, hMainInstance, NULL);
 	SendMessage(hAdvancedDeviceToolbar, CCM_SETVERSION, (WPARAM)6, 0);
-	memset(tbToolbarButtons, 0, sizeof(TBBUTTON));
+	memset(tbToolbarButtons, 0, sizeof(tbToolbarButtons));
 	tbToolbarButtons[0].idCommand = IDC_ADVANCED_DRIVE_PROPERTIES;
 	tbToolbarButtons[0].fsStyle = BTNS_SHOWTEXT | BTNS_AUTOSIZE;
 	tbToolbarButtons[0].fsState = TBSTATE_ENABLED;
@@ -1078,9 +1100,6 @@ void CreateAdditionalControls(HWND hDlg)
 	GetWindowRect(GetDlgItem(hDlg, IDC_ADVANCED_DRIVE_PROPERTIES), &rc);
 	MapWindowPoints(NULL, hDlg, (POINT*)&rc, 2);
 	SendMessage(hAdvancedDeviceToolbar, TB_GETIDEALSIZE, (WPARAM)FALSE, (LPARAM)&sz);
-	// Yeah, so, like, TB_GETIDEALSIZE totally super doesn't work on Windows 7, for low zoom factor and when compiled with MSVC...
-	if (sz.cx < 16)
-		sz.cx = fw;
 	SetWindowPos(hAdvancedDeviceToolbar, hTargetSystem, rc.left + toolbar_dx, rc.top, sz.cx, rc.bottom - rc.top, 0);
 	SetAccessibleName(hAdvancedDeviceToolbar, lmprintf(MSG_119));
 
@@ -1088,7 +1107,7 @@ void CreateAdditionalControls(HWND hDlg)
 	hAdvancedFormatToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, TOOLBAR_STYLE,
 		0, 0, 0, 0, hMainDialog, (HMENU)IDC_ADVANCED_FORMAT_TOOLBAR, hMainInstance, NULL);
 	SendMessage(hAdvancedFormatToolbar, CCM_SETVERSION, (WPARAM)6, 0);
-	memset(tbToolbarButtons, 0, sizeof(TBBUTTON));
+	memset(tbToolbarButtons, 0, sizeof(tbToolbarButtons));
 	tbToolbarButtons[0].idCommand = IDC_ADVANCED_FORMAT_OPTIONS;
 	tbToolbarButtons[0].fsStyle = BTNS_SHOWTEXT | BTNS_AUTOSIZE;
 	tbToolbarButtons[0].fsState = TBSTATE_ENABLED;
@@ -1100,8 +1119,6 @@ void CreateAdditionalControls(HWND hDlg)
 	GetWindowRect(GetDlgItem(hDlg, IDC_ADVANCED_FORMAT_OPTIONS), &rc);
 	MapWindowPoints(NULL, hDlg, (POINT*)&rc, 2);
 	SendMessage(hAdvancedFormatToolbar, TB_GETIDEALSIZE, (WPARAM)FALSE, (LPARAM)&sz);
-	if (sz.cx < 16)
-		sz.cx = fw;
 	SetWindowPos(hAdvancedFormatToolbar, hClusterSize, rc.left + toolbar_dx, rc.top, sz.cx, rc.bottom - rc.top, 0);
 	SetAccessibleName(hAdvancedFormatToolbar, lmprintf(MSG_120));
 
@@ -1113,6 +1130,7 @@ void CreateAdditionalControls(HWND hDlg)
 		buffer = GetResource(hMainInstance, MAKEINTRESOURCEA(multitoolbar_icons[i] + icon_offset),
 			_RT_RCDATA, "toolbar icon", &bufsize, FALSE);
 		hIcon = CreateIconFromResourceEx(buffer, bufsize, TRUE, 0x30000, 0, 0, 0);
+		ChangeIconColor(&hIcon, 0);
 		// Mirror the "world" icon on RTL since we can't use an ImageList mirroring flag for that...
 		if (right_to_left_mode && (i == 0))
 			hIcon = CreateMirroredIcon(hIcon);
@@ -1178,6 +1196,9 @@ void InitProgress(BOOL bOnlyFormat)
 				break;
 			case BT_IMAGE:
 				nb_slots[OP_FILE_COPY] = (img_report.is_iso || img_report.is_windows_img) ? -1 : 0;
+				if (HAS_WINDOWS(img_report) && (unattend_xml_path != NULL) &&
+					(ComboBox_GetCurItemData(hImageOption) != IMOP_WIN_TO_GO))
+					nb_slots[OP_PATCH] = -1;
 				break;
 			default:
 				nb_slots[OP_FILE_COPY] = 2 + 1;
@@ -1195,13 +1216,16 @@ void InitProgress(BOOL bOnlyFormat)
 			// So, yeah, if you're doing slow format, or using Large FAT32, and have persistence, you'll see
 			// the progress bar revert during format on account that we reuse the same operation for both
 			// partitions. Maybe one day I'll be bothered to handle two separate OP_FORMAT ops...
-			if ((!IsChecked(IDC_QUICK_FORMAT)) || (persistence_size != 0) || (fs_type >= FS_EXT2) ||
+			if ((!IsChecked(IDC_QUICK_FORMAT)) || (persistence_size != 0) || IS_EXT(fs_type) ||
 				((fs_type == FS_FAT32) && ((SelectedDrive.DiskSize >= LARGE_FAT32_SIZE) || (force_large_fat32)))) {
 				nb_slots[OP_FORMAT] = -1;
 				nb_slots[OP_CREATE_FS] = 0;
 			}
 			nb_slots[OP_FINALIZE] = ((selection_default == BT_IMAGE) && (fs_type == FS_NTFS)) ? 3 : 2;
 		}
+	}
+	if (archive_path != NULL) {
+		nb_slots[OP_EXTRACT_ZIP] = -1;
 	}
 
 	for (i = 0; i < OP_MAX; i++) {
@@ -1384,7 +1408,7 @@ static void bar_update(struct bar_progress* bp, uint64_t howmuch, uint64_t dltim
 // display percentage completed, rate of transfer and estimated remaining duration.
 // During init (op = OP_INIT) an optional HWND can be passed on which to look for
 // a progress bar. Part of the code (eta, speed) comes from GNU wget.
-void UpdateProgressWithInfo(int op, int msg, uint64_t processed, uint64_t total)
+void _UpdateProgressWithInfo(int op, int msg, uint64_t processed, uint64_t total, BOOL force)
 {
 	static int last_update_progress_type = UPT_PERCENT;
 	static struct bar_progress bp = { 0 };
@@ -1483,7 +1507,7 @@ void UpdateProgressWithInfo(int op, int msg, uint64_t processed, uint64_t total)
 			static_sprintf(msg_data, "%0.1f%%", percent);
 			break;
 		}
-		if ((bp.count == bp.total_length) || (current_time > last_refresh + MAX_REFRESH)) {
+		if ((force) || (bp.count == bp.total_length) || (current_time > last_refresh + MAX_REFRESH)) {
 			if (op < 0) {
 				SendMessage(hProgressBar, PBM_SETPOS, (WPARAM)(MAX_PROGRESS * percent / 100.0f), 0);
 				if (op == OP_NOOP_WITH_TASKBAR)
@@ -1491,8 +1515,8 @@ void UpdateProgressWithInfo(int op, int msg, uint64_t processed, uint64_t total)
 			} else {
 				UpdateProgress(op, (float)percent);
 			}
-			if ((msg >= 0) && ((current_time > bp.last_screen_update + SCREEN_REFRESH_INTERVAL) ||
-				(last_update_progress_type != update_progress_type) || (bp.count == bp.total_length))) {
+			if ((force) || ((msg >= 0) && ((current_time > bp.last_screen_update + SCREEN_REFRESH_INTERVAL) ||
+				(last_update_progress_type != update_progress_type) || (bp.count == bp.total_length)))) {
 				PrintInfo(0, msg, msg_data);
 				bp.last_screen_update = current_time;
 			}
@@ -1581,10 +1605,13 @@ void SetBootTypeDropdownWidth(void)
 void OnPaint(HDC hdc)
 {
 	int i;
-	HPEN hp = CreatePen(0, (fScale < 1.5f) ? 2 : 3, RGB(0, 0, 0));
-	SelectObject(hdc, hp);
+	COLORREF cp = is_darkmode_enabled ? DARKMODE_NORMAL_CONTROL_EDGE_COLOR : GetSysColor(COLOR_WINDOWTEXT);
+	HPEN hp = CreatePen(0, (fScale < 1.5f) ? 2 : 3, cp);
+	HPEN hop = (HPEN)SelectObject(hdc, hp);
 	for (i = 0; i < ARRAYSIZE(section_vpos); i++) {
 		MoveToEx(hdc, mw + 10, section_vpos[i], NULL);
 		LineTo(hdc, mw + fw, section_vpos[i]);
 	}
+	SelectObject(hdc, hop);
+	DeleteObject(hp);
 }

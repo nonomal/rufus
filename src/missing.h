@@ -1,7 +1,7 @@
 /*
 * Rufus: The Reliable USB Formatting Utility
 * Constants and defines missing from various toolchains
-* Copyright © 2016-2017 Pete Batard <pete@akeo.ie>
+* Copyright © 2016-2025 Pete Batard <pete@akeo.ie>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,24 +18,26 @@
 */
 
 #include <windows.h>
+#include <intrin.h>
 
 #pragma once
-
-/* Convenient to have around */
-#define KB                   1024LL
-#define MB                1048576LL
-#define GB             1073741824LL
-#define TB          1099511627776LL
 
 #ifndef MIN
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
-#if defined(__GNUC__)
-#define ALIGNED(m) __attribute__ ((__aligned__(m)))
-#elif defined(_MSC_VER)
-#define ALIGNED(m) __declspec(align(m))
+#ifndef MAX
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #endif
+
+#define MAP_BIT(bit) do { map[_log2(bit)] = b; b <<= 1; } while(0)
+
+#define FLOOR_ALIGN(x, y) (((x) / (y)) * (y))
+#define CEILING_ALIGN(x, y) ((((x) + (y) - 1) / (y)) * (y))
+
+#define IS_HEXASCII(c) (((c) >= '0' && (c) <= '9') || ((c) >= 'A' && (c) <= 'F') || ((c) >= 'a' && (c) <= 'f'))
+#define FROM_HEXASCII(c) (((c) >= '0' && (c) <= '9') ? (c) - '0' : (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 10 : \
+	(((c) >= 'a' && (c) <= 'z') ? (c) - 'a' + 10 : 0 )))
 
 /*
  * Prefetch 64 bytes at address m, for read-only operation
@@ -43,10 +45,10 @@
  * line has already been fetched, or if the address is invalid.
  */
 #if defined(__GNUC__) || defined(__clang__)
-#define PREFETCH64(m) do { __builtin_prefetch(m, 0, 0); __builtin_prefetch(m+32, 0, 0); } while(0)
+#define PREFETCH64(m) do { __builtin_prefetch((m), 0, 0); __builtin_prefetch((m) + 32, 0, 0); } while(0)
 #elif defined(_MSC_VER)
 #if defined(_M_IX86) || defined (_M_X64)
-#define PREFETCH64(m) do { _m_prefetch(m); _m_prefetch(m+32); } while(0)
+#define PREFETCH64(m) do { _m_prefetch((void*)(m)); _m_prefetch((void*)((m) + 32)); } while(0)
 #else
 // _m_prefetch() doesn't seem to exist for MSVC/ARM
 #define PREFETCH64(m)
@@ -89,12 +91,12 @@ static __inline uint8_t popcnt8(uint8_t val)
 
 static __inline uint8_t popcnt64(register uint64_t u)
 {
-	u = (u & 0x5555555555555555) + ((u >> 1) & 0x5555555555555555);
-	u = (u & 0x3333333333333333) + ((u >> 2) & 0x3333333333333333);
-	u = (u & 0x0f0f0f0f0f0f0f0f) + ((u >> 4) & 0x0f0f0f0f0f0f0f0f);
-	u = (u & 0x00ff00ff00ff00ff) + ((u >> 8) & 0x00ff00ff00ff00ff);
-	u = (u & 0x0000ffff0000ffff) + ((u >> 16) & 0x0000ffff0000ffff);
-	u = (u & 0x00000000ffffffff) + ((u >> 32) & 0x00000000ffffffff);
+	u = (u & 0x5555555555555555ULL) + ((u >> 1) & 0x5555555555555555ULL);
+	u = (u & 0x3333333333333333ULL) + ((u >> 2) & 0x3333333333333333ULL);
+	u = (u & 0x0f0f0f0f0f0f0f0fULL) + ((u >> 4) & 0x0f0f0f0f0f0f0f0fULL);
+	u = (u & 0x00ff00ff00ff00ffULL) + ((u >> 8) & 0x00ff00ff00ff00ffULL);
+	u = (u & 0x0000ffff0000ffffULL) + ((u >> 16) & 0x0000ffff0000ffffULL);
+	u = (u & 0x00000000ffffffffULL) + ((u >> 32) & 0x00000000ffffffffULL);
 	return (uint8_t)u;
 }
 
@@ -103,6 +105,60 @@ static __inline void *_reallocf(void *ptr, size_t size) {
 	if (!ret)
 		free(ptr);
 	return ret;
+}
+
+static __inline int _log2(register int val)
+{
+	int ret = 0;
+	if (val < 0)
+		return -2;
+	while (val >>= 1)
+		ret++;
+	return ret;
+}
+
+/// <summary>
+/// Remaps bits from a byte according to an 8x8 bit matrix.
+/// </summary>
+/// <param name="src">The byte to remap.</param>
+/// <param name="map">An 8-byte array where each byte has a single bit set to the position to remap to.</param>
+/// <param name="reverse">Indicates whether the reverse mapping operation should be applied.</param>
+/// <returns>The remapped byte data.</returns>
+static __inline uint8_t remap8(uint8_t src, uint8_t* map, const BOOL reverse)
+{
+	uint8_t i, m = 1, r = 0;
+	for (i = 0, m = 1; i < (sizeof(src) * 8); i++, m <<= 1) {
+		if (reverse) {
+			if (src & map[i])
+				r |= m;
+		} else {
+			if (src & m)
+				r |= map[i];
+		}
+	}
+	return r;
+}
+
+/// <summary>
+/// Remaps bits from a 16-bit word according to a 16x16 bit matrix.
+/// </summary>
+/// <param name="src">The word to remap.</param>
+/// <param name="map">A 16-word array where each word has a single bit set to the position to remap to.</param>
+/// <param name="reverse">Indicates whether the reverse mapping operation should be applied.</param>
+/// <returns>The remapped byte data.</returns>
+static __inline uint16_t remap16(uint16_t src, uint16_t* map, const BOOL reverse)
+{
+	uint16_t i, m = 1, r = 0;
+	for (i = 0, m = 1; i < (sizeof(src) * 8); i++, m <<= 1) {
+		if (reverse) {
+			if (src & map[i])
+				r |= m;
+		} else {
+			if (src & m)
+				r |= map[i];
+		}
+	}
+	return r;
 }
 
 /* Why oh why does Microsoft have to make everybody suffer with their braindead use of Unicode? */
@@ -131,11 +187,7 @@ static __inline void *_reallocf(void *ptr, size_t size) {
 #define ERROR_OFFSET_ALIGNMENT_VIOLATION        327
 #endif
 
-/* The following is used for native ISO mounting in Windows 8 or later */
-#define VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT \
-	{ 0xEC984AECL, 0xA0F9, 0x47e9, { 0x90, 0x1F, 0x71, 0x41, 0x5A, 0x66, 0x34, 0x5B } }
-
-/* RISC-V is still bleeding edge */
+/* RISC-V and LoongArch are still bleeding edge */
 #ifndef IMAGE_FILE_MACHINE_RISCV32
 #define IMAGE_FILE_MACHINE_RISCV32 0x5032
 #endif
@@ -144,4 +196,10 @@ static __inline void *_reallocf(void *ptr, size_t size) {
 #endif
 #ifndef IMAGE_FILE_MACHINE_RISCV128
 #define IMAGE_FILE_MACHINE_RISCV128 0x5128
+#endif
+#ifndef IMAGE_FILE_MACHINE_LOONGARCH32
+#define IMAGE_FILE_MACHINE_LOONGARCH32 0x6232
+#endif
+#ifndef IMAGE_FILE_MACHINE_LOONGARCH64
+#define IMAGE_FILE_MACHINE_LOONGARCH64 0x6264
 #endif

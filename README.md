@@ -1,13 +1,13 @@
 Rufus: The Reliable USB Formatting Utility
 ==========================================
 
-[![Build status](https://img.shields.io/github/workflow/status/pbatard/rufus/VS2019.svg?style=flat-square&label=VS2019)](https://github.com/pbatard/rufus/actions/workflows/vs2019.yml)
-[![Build status](https://img.shields.io/github/workflow/status/pbatard/rufus/MinGW.svg?style=flat-square&label=MinGW)](https://github.com/pbatard/rufus/actions/workflows/mingw.yml)
-[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/2172.svg?style=flat-square)](https://scan.coverity.com/projects/pbatard-rufus)
-[![Build contributors](https://img.shields.io/github/contributors/pbatard/rufus.svg?style=flat-square)](https://github.com/pbatard/rufus/graphs/contributors)
-[![Github stats](https://img.shields.io/github/downloads/pbatard/rufus/total.svg?label=downloads%20%28since%202019%29&style=flat-square)](https://github.com/pbatard/rufus/releases)
-[![Release](https://img.shields.io/github/release-pre/pbatard/rufus.svg?style=flat-square)](https://github.com/pbatard/rufus/releases)
-[![Licence](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![VS2022 Build Status](https://img.shields.io/github/actions/workflow/status/pbatard/rufus/vs2026.yml?branch=master&style=flat-square&label=VS2026%20Build)](https://github.com/pbatard/rufus/actions/workflows/vs2026.yml)
+[![MinGW Build Status](https://img.shields.io/github/actions/workflow/status/pbatard/rufus/mingw.yml?branch=master&style=flat-square&label=MinGW%20Build)](https://github.com/pbatard/rufus/actions/workflows/mingw.yml)
+[![Coverity Scan Status](https://img.shields.io/coverity/scan/2172.svg?style=flat-square&label=Coverity%20Analysis)](https://scan.coverity.com/projects/pbatard-rufus)  
+[![Latest Release](https://img.shields.io/github/release-pre/pbatard/rufus.svg?style=flat-square&label=Latest%20Release)](https://github.com/pbatard/rufus/releases)
+[![Licence](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square&label=License)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Download Stats](https://img.shields.io/github/downloads/pbatard/rufus/total.svg?label=Downloads&style=flat-square)](https://github.com/pbatard/rufus/releases)
+[![Contributors](https://img.shields.io/github/contributors/pbatard/rufus.svg?style=flat-square&label=Contributors)](https://github.com/pbatard/rufus/graphs/contributors)
 
 ![Rufus logo](https://raw.githubusercontent.com/pbatard/rufus/master/res/icons/rufus-128.png)
 
@@ -17,26 +17,29 @@ Features
 --------
 
 * Format USB, flash card and virtual drives to FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3
-* Create DOS bootable USB drives, using [FreeDOS](https://www.freedos.org) or MS-DOS (Windows 8.1 or earlier)
+* Create DOS bootable USB drives using [FreeDOS](https://www.freedos.org) or MS-DOS
 * Create BIOS or UEFI bootable drives, including [UEFI bootable NTFS](https://github.com/pbatard/uefi-ntfs)
 * Create bootable drives from bootable ISOs (Windows, Linux, etc.)
 * Create bootable drives from bootable disk images, including compressed ones
+* Create Windows 11 installation drives for PCs that don't have TPM or Secure Boot
 * Create [Windows To Go](https://en.wikipedia.org/wiki/Windows_To_Go) drives
+* Create VHD/DD, VHDX and FFU images of an existing drive
 * Create persistent Linux partitions
-* Download official Microsoft Windows 7, Windows 8 or Windows 10 retail ISOs
-* Download [UEFI Shell](https://github.com/pbatard/UEFI-Shell) ISOs
 * Compute MD5, SHA-1, SHA-256 and SHA-512 checksums of the selected image
-* Twice as fast as Microsoft's USB/DVD tool or UNetbootin, on ISO → USB creation <sup>(1)</sup>
+* Perform runtime validation of UEFI bootable media
+* Improve Windows installation experience by automatically setting up OOBE parameters (local account, privacy options, etc.)
 * Perform bad blocks checks, including detection of "fake" flash drives
+* Download official Microsoft Windows 8, Windows 10 or Windows 11 retail ISOs
+* Download [UEFI Shell](https://github.com/pbatard/UEFI-Shell) ISOs
 * Modern and familiar UI, with [38 languages natively supported](https://github.com/pbatard/rufus/wiki/FAQ#What_languages_are_natively_supported_by_Rufus)
 * Small footprint. No installation required.
-* Portable
+* Portable. Secure Boot compatible.
 * 100% [Free Software](https://www.gnu.org/philosophy/free-sw) ([GPL v3](https://www.gnu.org/licenses/gpl-3.0))
 
 Compilation
 -----------
 
-Use either Visual Studio 2019 or MinGW and then invoke the `.sln` or `configure`/`make` respectively.
+Use either Visual Studio 2026 or MinGW and then invoke the `.sln` or `configure`/`make` respectively.
 
 #### Visual Studio
 
@@ -53,19 +56,10 @@ easily accessible log, or through the [Windows debug facility](https://docs.micr
 
 * [__Official Website__](https://rufus.ie)
 * [FAQ](https://github.com/pbatard/rufus/wiki/FAQ)
+* [Security and safety measures](https://github.com/pbatard/rufus/wiki/Security)
 
 Enhancements/Bugs
 -----------------
 
 Please use the [GitHub issue tracker](https://github.com/pbatard/rufus/issues)
 for reporting problems or suggesting new features.
-
-
-<sup>(1)</sup> Tests carried out with a 16 GB USB 3.0 ADATA pen drive on a Core 2 duo/4 GB RAM platform running Windows 7 x64.
-ISO: `en_windows_7_ultimate_with_sp1_x64_dvd_618240.iso`
-
-| Name of tool | Version | Time |
-| ------------ | ------- | ---- |
-| [Windows USB/DVD Download Tool](https://www.microsoft.com/en-us/download/windows-usb-dvd-download-tool) | v1.0.30 | 8 mins 10s |
-| [UNetbootin](https://unetbootin.github.io) | v1.1.1.1 | 6 mins 20s |
-| **Rufus** | v1.1.0 | **3 mins 25s** |

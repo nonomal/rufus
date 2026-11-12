@@ -28,6 +28,7 @@
 #include "syslinux.h"
 #include "syslxint.h"
 
+extern void uprintf(const char* format, ...);
 
 /*
  * Generate sector extents
@@ -161,12 +162,13 @@ int syslinux_patch(const sector_t *sectp, int nsectors,
 #if 0
     if (nsect > nptrs) {
 	/* Not necessarily an error in this case, but a general problem */
-	fprintf(stderr, "Insufficient extent space, build error!\n");
-	exit(1);
+	uprintf("syslinux_patch: Insufficient extent space, build error!\n");
+	return -1;
     }
 #endif
 
     /* -1 for the pointer in the boot sector, -2 for the two ADVs */
+    // coverity[tainted_data]
     generate_extents(ex, nptrs, sectp, nsect-1-2);
 
     /* ADV pointers */
@@ -178,8 +180,8 @@ int syslinux_patch(const sector_t *sectp, int nsectors,
     if (subdir) {
 	int sublen = strlen(subdir) + 1;
 	if (get_16_sl(&epa->dirlen) < sublen) {
-	    fprintf(stderr, "Subdirectory path too long... aborting install!\n");
-	    exit(1);
+	    uprintf("syslinux_patch: Subdirectory path too long... aborting install!");
+	    return -1;
 	}
 	memcpy_to_sl(slptr(boot_image, &epa->diroffset), subdir, sublen);
     }
@@ -188,8 +190,8 @@ int syslinux_patch(const sector_t *sectp, int nsectors,
     if (subvol) {
 	int sublen = strlen(subvol) + 1;
 	if (get_16_sl(&epa->subvollen) < sublen) {
-	    fprintf(stderr, "Subvol name too long... aborting install!\n");
-	    exit(1);
+	    uprintf("syslinux_patch: Subvol name too long... aborting install!");
+	    return -1;
 	}
 	memcpy_to_sl(slptr(boot_image, &epa->subvoloffset), subvol, sublen);
     }

@@ -142,7 +142,7 @@ _stdio_free(void *user_data)
   free(ud);
 }
 
-/*!
+/**
   Like fseek/fseeko(3) and in fact may be the same.
 
   This  function sets the file position indicator for the stream
@@ -187,7 +187,7 @@ _stdio_stat(void *p_user_data)
   return ud->st_size;
 }
 
-/*!
+/**
   Like fread(3) and in fact is about the same.
 
   DESCRIPTION:
@@ -210,6 +210,13 @@ _stdio_read(void *user_data, void *buf, size_t count)
   _UserData *const ud = user_data;
   long read_count;
 
+  // Define a max buffer size of 1 GB for _stdio_read
+  const size_t MAX_ALLOWED_COUNT = 0x40000000;
+  if (count > MAX_ALLOWED_COUNT) {
+      cdio_error("Requested count exceeds maximum allowed value.\n");
+      return 0;
+  }
+
   read_count = fread(buf, 1, count, ud->fd);
 
   if (read_count != count)
@@ -231,8 +238,8 @@ _stdio_read(void *user_data, void *buf, size_t count)
   return read_count;
 }
 
-/*!
-  Deallocate resources assocaited with obj. After this obj is unusable.
+/**
+  Deallocate resources associated with obj. After this obj is unusable.
 */
 void
 cdio_stdio_destroy(CdioDataSource_t *p_obj)

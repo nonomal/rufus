@@ -20,20 +20,31 @@
 #include <windows.h>
 #include <stdint.h>
 #include "resource.h"
+#include "localization.h"
 
 #pragma once
 
 // Progress bar colors
-#define PROGRESS_BAR_NORMAL_TEXT_COLOR		RGB(0x00, 0x00, 0x00)
-#define PROGRESS_BAR_INVERTED_TEXT_COLOR	RGB(0xFF, 0xFF, 0xFF)
-#define PROGRESS_BAR_BACKGROUND_COLOR		RGB(0xE6, 0xE6, 0xE6)
-#define PROGRESS_BAR_BOX_COLOR				RGB(0xBC, 0xBC, 0xBC)
-#define PROGRESS_BAR_NORMAL_COLOR			RGB(0x06, 0xB0, 0x25)
-#define PROGRESS_BAR_PAUSED_COLOR			RGB(0xDA, 0xCB, 0x26)
-#define PROGRESS_BAR_ERROR_COLOR			RGB(0xDA, 0x26, 0x26)
+#define PROGRESS_BAR_NORMAL_TEXT_COLOR				RGB(0x00, 0x00, 0x00)
+#define PROGRESS_BAR_INVERTED_TEXT_COLOR			RGB(0xFF, 0xFF, 0xFF)
+#define PROGRESS_BAR_BACKGROUND_COLOR				RGB(0xE6, 0xE6, 0xE6)
+#define PROGRESS_BAR_BOX_COLOR						RGB(0xBC, 0xBC, 0xBC)
+#define PROGRESS_BAR_NORMAL_COLOR					RGB(0x06, 0xB0, 0x25)
+#define PROGRESS_BAR_PAUSED_COLOR					RGB(0xDA, 0xCB, 0x26)
+#define PROGRESS_BAR_ERROR_COLOR					RGB(0xDA, 0x26, 0x26)
 
 // Toolbar icons main color
-#define TOOLBAR_ICON_COLOR					RGB(0x29, 0x80, 0xB9)
+#define TOOLBAR_ICON_COLOR							RGB(0x29, 0x80, 0xB9)
+
+// Dark Mode Colors
+#define DARKMODE_TOOLBAR_ICON_COLOR					RGB(0xFF, 0xD7, 0x00)
+#define DARKMODE_NORMAL_TEXT_COLOR					RGB(0xE0, 0xE0, 0xE0)
+#define DARKMODE_DISABLED_TEXT_COLOR				RGB(0x80, 0x80, 0x80)
+#define DARKMODE_NORMAL_DIALOG_BACKGROUND_COLOR		RGB(0x20, 0x20, 0x20)
+#define DARKMODE_NORMAL_CONTROL_BACKGROUND_COLOR	RGB(0x38, 0x38, 0x38)
+#define DARKMODE_HOT_CONTROL_BACKGROUND_COLOR		RGB(0x45, 0x45, 0x45)
+#define DARKMODE_NORMAL_CONTROL_EDGE_COLOR			RGB(0x64, 0x64, 0x64)
+#define DARKMODE_HOT_CONTROL_EDGE_COLOR				RGB(0x9B, 0x9B, 0x9B)
 
 // Toolbar default style
 #define TOOLBAR_STYLE						( WS_CHILD | WS_TABSTOP | WS_VISIBLE | \
@@ -74,7 +85,7 @@ enum update_progress_type {
 extern HWND hMultiToolbar, hSaveToolbar, hHashToolbar, hAdvancedDeviceToolbar, hAdvancedFormatToolbar;
 extern HFONT hInfoFont;
 extern UINT_PTR UM_LANGUAGE_MENU_MAX;
-extern BOOL advanced_mode_device, advanced_mode_format, force_large_fat32, app_changed_size, windows_to_go_selected;
+extern BOOL advanced_mode_device, advanced_mode_format, force_large_fat32, app_changed_size;
 extern loc_cmd* selected_locale;
 extern uint64_t persistence_size;
 extern const char *sfd_name, *flash_type[BADLOCKS_PATTERN_TYPES];
@@ -90,7 +101,7 @@ extern void GetHalfDropwdownWidth(HWND hDlg);
 extern void GetFullWidth(HWND hDlg);
 extern void PositionMainControls(HWND hDlg);
 extern void AdjustForLowDPI(HWND hDlg);
-extern void SetSectionHeaders(HWND hDlg);
+extern void SetSectionHeaders(HWND hDlg, HFONT* hFont);
 extern void SetPersistencePos(uint64_t pos);
 extern void SetPersistenceSize(void);
 extern void TogglePersistenceControls(BOOL display);
@@ -99,6 +110,7 @@ extern void ToggleAdvancedFormatOptions(BOOL enable);
 extern void ToggleImageOptions(void);
 extern void CreateSmallButtons(HWND hDlg);
 extern void CreateAdditionalControls(HWND hDlg);
+extern void EnableControls(BOOL enable, BOOL remove_checkboxes);
 extern void InitProgress(BOOL bOnlyFormat);
 extern void ShowLanguageMenu(RECT rcExclude);
 extern void SetPassesTooltip(void);

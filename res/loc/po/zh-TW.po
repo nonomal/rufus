@@ -1,9 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: 3.14\n"
+"Project-Id-Version: 4.14\n"
 "Report-Msgid-Bugs-To: pete@akeo.ie\n"
-"POT-Creation-Date: 2021-04-03 17:18+0800\n"
-"PO-Revision-Date: 2021-04-03 18:47+0800\n"
+"POT-Creation-Date: 2026-04-14 02:06+0800\n"
+"PO-Revision-Date: 2026-04-14 03:18+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,9 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Rufus-LanguageName: Chinese Traditional (正體中文)\n"
 "X-Rufus-LCID: 0x0404, 0x0c04, 0x1404, 0x7c04\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.9\n"
 
 #. • IDD_DIALOG → IDS_DRIVE_PROPERTIES_TXT
 msgid "Drive Properties"
@@ -54,13 +54,11 @@ msgstr "顯示 USB 外接硬碟"
 msgid "Add fixes for old BIOSes (extra partition, align, etc.)"
 msgstr "相容性模式"
 
-#. • IDD_DIALOG → IDC_RUFUS_MBR
+#. • IDD_DIALOG → IDC_UEFI_MEDIA_VALIDATION
 #.
-#. 'MBR': See http://en.wikipedia.org/wiki/Master_boot_record
-#. Rufus can install it's own custom MBR (the Rufus MBR), which also allows users to
-#. specify a custom disk ID for the BIOS. The tooltip for this control is MSG_167.
-msgid "Use Rufus MBR with BIOS ID"
-msgstr "使用 Rufus MBR 並設定 BIOS ID 為"
+#. It is acceptable to drop the "runtime" if you are running out of space
+msgid "Enable runtime UEFI media validation"
+msgstr "啟用執行階段 UEFI 媒體驗證"
 
 #. • IDD_DIALOG → IDS_FORMAT_OPTIONS_TXT
 msgid "Format Options"
@@ -282,7 +280,7 @@ msgstr "最新版本: %d.%d (Build %d)"
 #. • MSG_020
 #. • MSG_026
 msgid "bytes"
-msgstr ""
+msgstr "位元組"
 
 #. • MSG_021
 #.
@@ -310,17 +308,17 @@ msgstr ""
 
 #. • MSG_025
 #.
-#. *Short* version of the pentabyte size suffix
+#. *Short* version of the petabyte size suffix
 msgid "PB"
 msgstr ""
 
 #. • MSG_027
 msgid "kilobytes"
-msgstr ""
+msgstr "KB"
 
 #. • MSG_028
 msgid "megabytes"
-msgstr ""
+msgstr "MB"
 
 #. • MSG_029
 msgid "Default"
@@ -391,7 +389,7 @@ msgstr "檔案下載"
 
 #. • MSG_045
 msgid "USB Storage Device (Generic)"
-msgstr "USB 裝置"
+msgstr "USB 儲存裝置"
 
 #. • MSG_046
 msgid "%s (Disk %d) [%s]"
@@ -417,7 +415,7 @@ msgstr "完成。"
 
 #. • MSG_051
 msgid "Undetermined error while formatting."
-msgstr "格式化中發生不明錯誤。"
+msgstr "格式化時發生不明錯誤。"
 
 #. • MSG_052
 msgid "Cannot use the selected file system for this media."
@@ -489,7 +487,7 @@ msgstr "無法分割磁碟。"
 
 #. • MSG_069
 msgid "Could not copy files to target drive."
-msgstr "無法複製檔案到裝置。"
+msgstr "無法複製檔案到目標磁碟。"
 
 #. • MSG_070
 msgid "Cancelled by user."
@@ -507,7 +505,7 @@ msgstr "損毀磁區檢查工作未完成。"
 
 #. • MSG_073
 msgid "ISO image scan failure."
-msgstr "檔掃 ISO 映像描失敗。"
+msgstr "掃描 ISO 映像檔失敗。"
 
 #. • MSG_074
 msgid "ISO image extraction failure."
@@ -543,13 +541,13 @@ msgid ""
 msgstr ""
 "Rufus 偵測到 Windows 正在排清緩衝區至 USB 裝置。\n"
 "\n"
-"此作業可能需要一段時間才完成、視裝置速度及檔案大小而定。\n"
+"此作業可能需要一段時間才完成，視裝置速度及檔案大小而定。\n"
 "\n"
-"我們建議耐心等候操作完成、以免發生資料損毀。但如果不願意等待、可以直接移除裝置..."
+"我們建議耐心等候操作完成，以免發生資料損毀。但如果不願意等待，可以直接移除裝置..."
 
 #. • MSG_081
 msgid "Unsupported image"
-msgstr "不支援的 ISO 映像檔"
+msgstr "不支援的映像檔"
 
 #. • MSG_082
 msgid "This image is either non-bootable, or it uses a boot or compression method that is not supported by Rufus..."
@@ -575,7 +573,7 @@ msgstr ""
 "開機選單可能因此無法正常運作。\n"
 "\n"
 "Rufus 可下載新版本來修正問題:\n"
-"- 選 '是' 將連上網路並下載檔案\n"
+"- 選 '是' 將連線到網路並下載檔案\n"
 "- 選 '否' 保留原始 ISO 內容\n"
 "如果你不知道該如何抉擇，建議選擇 '是'。\n"
 "\n"
@@ -845,7 +843,7 @@ msgstr "不固定"
 
 #. • MSG_125
 #.
-#. Tooltips used for the peristence size slider and edit control
+#. Tooltips used for the persistence size slider and edit control
 msgid "Set the size of the persistent partition for live USB media. Setting the size to 0 disables the persistent partition."
 msgstr "設定 live USB 的固定磁區大小。大小設定為 0 則移除固定磁區。"
 
@@ -866,7 +864,7 @@ msgid ""
 "You have just created a media that uses the UEFI:NTFS bootloader. Please remember that, to boot this media, YOU MUST DISABLE SECURE BOOT.\n"
 "For details on why this is necessary, see the 'More Information' button below."
 msgstr ""
-"你已建立使用 UEFI:NTFS bootloader 的裝置。如要使用此裝置開機，請記得關閉 SECURE BOOT。\n"
+"你已建立使用 UEFI:NTFS 開機引導程式的裝置。如要使用此裝置開機，請記得關閉安全開機。\n"
 "更多資訊請點選底下 '進階說明' 按鈕。"
 
 #. • MSG_130
@@ -887,7 +885,7 @@ msgstr "另一個程式或程序正在使用此裝置，要繼續格式化?"
 
 #. • MSG_133
 msgid ""
-"Rufus has detected that you are attempting to create a Windows To Go media based on a 1809 ISO.\n"
+"Rufus has detected that you are attempting to create a 'Windows To Go' media based on a 1809 ISO.\n"
 "\n"
 "Because of a *MICROSOFT BUG*, this media will crash during Windows boot (Blue Screen Of Death), unless you manually replace the file 'WppRecorder.sys' with a 1803 version.\n"
 "\n"
@@ -895,7 +893,7 @@ msgid ""
 msgstr ""
 "Rufus 偵測到您將要建立 'Windows To Go' 1809 版本。\n"
 "\n"
-"由於微軟的程式錯誤，您將無法正常開機 (藍白當機)，除非您自行更換 'WppRecorder.sys' 成 1803 版本。\n"
+"由於微軟的程式錯誤，您將無法正常開機 (藍底白字當機)，除非您自行更換 'WppRecorder.sys' 成 1803 版本。\n"
 "\n"
 "此檔案版權擁有者為微軟，Rufus 愛莫能助..."
 
@@ -946,8 +944,8 @@ msgid "Download using a browser"
 msgstr "使用瀏覽器下載"
 
 #. • MSG_144
-msgid "Temporarily banned by Microsoft for requesting too many downloads - Please try again later..."
-msgstr "下載要求過多，已被微軟暫時列入黑名單 - 請稍後再嘗試..."
+msgid "Download of Windows ISOs is unavailable due to Microsoft having altered their website to prevent it."
+msgstr "由於 Microsoft 已更改其網站以阻止下載 Windows ISO，因此無法下載。"
 
 #. • MSG_145
 msgid "PowerShell 3.0 or later is required to run this script."
@@ -967,17 +965,17 @@ msgstr "下載 ISO 映像檔"
 
 #. • MSG_150
 msgid "Type of computer you plan to use this bootable drive with. It is your responsibility to determine whether your target is of BIOS or UEFI type before you start creating the drive, as it may fail to boot otherwise."
-msgstr "你欲使用此開機磁碟的電腦類型。在建立開機磁碟之前你必須確定該電腦使用 BIOS 或是 UEFI，若匹配錯誤將可能無法開機。"
+msgstr "你要使用此開機磁碟的電腦類型。在建立開機磁碟之前，你必須確定該電腦使用 BIOS 或是 UEFI，若沒正確對應可能無法開機。"
 
 #. • MSG_151
 #.
 #. You shouldn't translate 'Legacy Mode' as this is an option that usually appears in English in the UEFI settings.
 msgid "'UEFI-CSM' means that the device will only boot in BIOS emulation mode (also known as 'Legacy Mode') under UEFI, and not in native UEFI mode."
-msgstr "'UEFI-CSM'代表裝置只能在 UEFI 下的模擬 BIOS 模式 (或稱'Legacy Mode') 開機，而非原生 UEFI 模式。"
+msgstr "'UEFI-CSM' 代表裝置只能在 UEFI 下的模擬 BIOS 模式 (或稱 'Legacy Mode') 開機，而非原生 UEFI 模式。"
 
 #. • MSG_152
 msgid "'non CSM' means that the device will only boot in native UEFI mode, and not in BIOS emulation mode (also known as 'Legacy Mode')."
-msgstr "'無 CSM'代表裝置只能在原生 UEFI 模式下啟動，而非模擬 BIOS 模式 (或稱' Legacy Mode ')。"
+msgstr "'無 CSM' 代表裝置只能在原生 UEFI 模式下啟動，而非模擬 BIOS 模式 (或稱 'Legacy Mode')。"
 
 #. • MSG_153
 msgid "Test pattern: 0x%02X"
@@ -1040,16 +1038,8 @@ msgid "Check this box to allow the display of international labels and set a dev
 msgstr "允許顯示多國語言標籤及裝置圖示 (建立 autorun.inf)"
 
 #. • MSG_167
-msgid "Install an MBR that allows boot selection and can masquerade the BIOS USB drive ID"
-msgstr "於裝置上建立 Rufus 客製化的 MBR，可支援開機選單及偽裝 BIOS 中的 USB ID"
-
-#. • MSG_168
-msgid ""
-"Try to masquerade first bootable USB drive (usually 0x80) as a different disk.\n"
-"This should only be necessary if you install Windows XP and have more than one disk."
-msgstr ""
-"偽裝第一個可開機的 USB 磁碟為其他序列的磁碟。\n"
-"主要適用情境: 於多磁碟系統安裝 Windows XP。"
+msgid "Install a UEFI bootloader, that will perform MD5Sum file validation of the media"
+msgstr "安裝 UEFI 開機引導程式，該程式將對媒體進行 MD5 雜湊值驗證"
 
 #. • MSG_169
 msgid ""
@@ -1057,7 +1047,7 @@ msgid ""
 "This can improve boot detection for older BIOSes."
 msgstr ""
 "建立隱藏磁區分割並嘗試對齊資料分割界限。\n"
-"可幫助老舊 BIOS 偵測到開機片。"
+"可幫助老舊 BIOS 偵測到開機碟。"
 
 #. • MSG_170
 msgid "Enable the listing of USB Hard Drive enclosures. USE AT YOUR OWN RISKS!!!"
@@ -1068,7 +1058,7 @@ msgid ""
 "Start the formatting operation.\n"
 "This will DESTROY any data on the target!"
 msgstr ""
-"立即開始格式化作業\n"
+"立即開始格式化作業。\n"
 "注意: 裝置上所有的資料將被清除!"
 
 #. • MSG_172
@@ -1092,7 +1082,7 @@ msgstr "版本 %d.%d (Build %d)"
 
 #. • MSG_176
 msgid "English translation: Pete Batard <mailto:pete@akeo.ie>"
-msgstr "正體中文譯者: 佚 <mailto:mmmeow@gmail.com>\\line Chocobo1 <https://github.com/Chocobo1>"
+msgstr "正體中文譯者: 佚 <mailto:mmmeow@gmail.com>\\line Chocobo1 <https://github.com/Chocobo1>\\line SiderealArt <https://github.com/SiderealArt>\\line Ocha <https://github.com/cupofocha>"
 
 #. • MSG_177
 msgid "Report bugs or request enhancements at:"
@@ -1197,6 +1187,10 @@ msgstr "偵測到非標準磁區大小"
 #. • MSG_198
 msgid "'Windows To Go' can only be installed on a GPT partitioned drive if it has the FIXED attribute set. The current drive was not detected as FIXED."
 msgstr "'Windows To Go' 只能安裝於有 '固定' 屬性的 GPT 分割裝置。目前裝置屬性不是 '固定'。"
+
+#. • MSG_199
+msgid "This feature is not available on this platform."
+msgstr "此功能在此平台上不可用。"
 
 #. • MSG_201
 msgid "Cancelling - Please wait..."
@@ -1415,7 +1409,7 @@ msgstr "線上更新: 檢查更新版本中..."
 
 #. • MSG_244
 msgid "Updates: Unable to connect to the internet"
-msgstr "線上更新: 無法存取網路"
+msgstr "線上更新: 無法連線到網路"
 
 #. • MSG_245
 msgid "Updates: Unable to access version data"
@@ -1509,7 +1503,7 @@ msgstr "VMWare 磁碟偵測"
 
 #. • MSG_266
 msgid "Dual UEFI/BIOS mode"
-msgstr "Dual UEFI/BIOS 模式"
+msgstr "UEFI/BIOS 雙模式"
 
 #. • MSG_267
 msgid "Applying Windows image: %s"
@@ -1533,7 +1527,7 @@ msgstr "計算映像檔總和檢查碼: %s"
 
 #. • MSG_272
 msgid "Compute the MD5, SHA1 and SHA256 checksums for the selected image"
-msgstr "計算已選擇映像檔的 MD5, SHA1 和 SHA256 總和檢查碼"
+msgstr "計算已選擇映像檔的 MD5、SHA1 和 SHA256 總和檢查碼"
 
 #. • MSG_273
 msgid "Change the application language"
@@ -1605,7 +1599,7 @@ msgid ""
 "This is not a signature we recognize and could indicate some form of malicious activity...\n"
 "Are you sure you want to run this file?"
 msgstr ""
-"下載的檔案簽章者為: '%s'.\n"
+"下載的檔案簽章者為: '%s'。\n"
 "本軟體未使用此簽章，代表檔案可能已遭受病毒感染...\n"
 "是否要執行檔案?"
 
@@ -1615,7 +1609,7 @@ msgstr "正在寫入零: %s"
 
 #. • MSG_287
 msgid "Detection of non-USB removable drives"
-msgstr "偵測非USB可移除磁碟"
+msgstr "偵測非 USB 可移除磁碟"
 
 #. • MSG_288
 msgid "Missing elevated privileges"
@@ -1642,8 +1636,12 @@ msgid "Unsupported Windows version"
 msgstr "不支援的 Windows 版本"
 
 #. • MSG_294
-msgid "This version of Windows is no longer supported by Rufus."
-msgstr "Rufus 已不再支援此 Windows 版本。"
+msgid ""
+"This version of Windows is no longer supported by Rufus.\n"
+"The last version of Rufus compatible with this platform is v%d.%d."
+msgstr ""
+"Rufus 已不再支援此 Windows 版本。\n"
+"此平台Rufus所支援的最新版本為v%d.%d。"
 
 #. • MSG_295
 msgid "Warning: Unofficial version"
@@ -1708,7 +1706,7 @@ msgid "Create a disk image of the selected device"
 msgstr "建立選擇的裝置的磁碟映像"
 
 #. • MSG_305
-msgid "Use this option to indicate whether you want to use this device to install Windows on another disk, or if you want to run Windows directly from this drive (Windows To Go)."
+msgid "Use this option to indicate if you plan to install Windows to a different disk, or if you want to run Windows directly from this drive (Windows To Go)."
 msgstr "是否要使用此裝置來安裝 Windows 在另一個磁碟上，或是要直接在此磁碟上執行 Windows (Windows To Go)。"
 
 #. • MSG_306
@@ -1719,7 +1717,7 @@ msgid "Fast-zeroing drive: %s"
 msgstr "正在快速寫入零: %s"
 
 #. • MSG_307
-msgid "This may take a while"
+msgid "this may take a while"
 msgstr "可能需要一段時間"
 
 #. • MSG_308
@@ -1738,7 +1736,7 @@ msgid ""
 msgstr ""
 "你選擇的 ISO 使用 UEFI 可以直接當作 EFI System Partition (ESP)。比起占用整個通用磁區，使用 ESP 有時是更好的選擇。\n"
 "\n"
-"請選擇此映象檔的寫入模式:"
+"請選擇此映像檔的寫入模式:"
 
 #. • MSG_311
 msgid "Use %s (in the main application window) to enable."
@@ -1785,5 +1783,346 @@ msgid ""
 "The image you have selected is an ISOHybrid, but its creators have not made it compatible with ISO/File copy mode.\n"
 "As a result, DD image writing mode will be enforced."
 msgstr ""
-"你選擇的映象檔是 ISOHybrid，但是檔案作者沒有使之與 ISO/檔案複製 模式相容。\n"
-"因此強制使用 DD 映象寫入模式。"
+"你選擇的映像檔是 ISOHybrid，但是檔案作者沒有使之與 ISO/檔案複製模式相容。\n"
+"因此強制使用 DD 映像寫入模式。"
+
+#. • MSG_322
+msgid "Unable to open or read '%s'"
+msgstr "無法開啟或讀取 '%s'"
+
+#. • MSG_323
+msgid "Apply SkuSiPolicy.p7b on installation (See KB5042562)"
+msgstr "在安裝時套用 SkuSiPolicy.p7b (參閱 KB5042562)"
+
+#. • MSG_324
+msgid "QoL improvements (Don't force Copilot, OneDrive, Outlook, Fast Startup, etc.)"
+msgstr "Windows 體驗改善 (不強制安裝 Copilot、OneDrive、Outlook、 快速啟動等功能)"
+
+#. • MSG_325
+msgid "Applying Windows customization: %s"
+msgstr "正在套用 Windows 客製化設定：%s"
+
+#. • MSG_326
+msgid "Applying user options..."
+msgstr "正在套用使用者設定..."
+
+#. • MSG_327
+msgid "Windows User Experience"
+msgstr "Windows 使用者體驗"
+
+#. • MSG_328
+msgid "Customize Windows installation?"
+msgstr "客製化 Windows 安裝？"
+
+#. • MSG_329
+msgid "Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0"
+msgstr "移除對 4GB+ 記憶體、安全開機和 TPM 2.0 的要求"
+
+#. • MSG_330
+msgid "Remove requirement for an online Microsoft account"
+msgstr "將登入微軟帳號的要求移除"
+
+#. • MSG_331
+msgid "Disable data collection (Skip privacy questions)"
+msgstr "關閉資料收集 (跳過隱私設定)"
+
+#. • MSG_332
+msgid "Prevent Windows To Go from accessing internal disks"
+msgstr "防止 Windows To Go 存取內部磁碟"
+
+#. • MSG_333
+msgid "Create a local account with username:"
+msgstr "使用此使用者名建立一個本機帳戶:"
+
+#. • MSG_334
+msgid "Set regional options to the same values as this user's"
+msgstr "使用目前用戶的區域設定"
+
+#. • MSG_335
+msgid "Disable BitLocker automatic device encryption"
+msgstr "關閉 BitLocker 自動設備加密"
+
+#. • MSG_336
+msgid "Persistent log"
+msgstr "持久化日誌"
+
+#. • MSG_337
+msgid ""
+"An additional file ('%s') must be downloaded from Microsoft to use this feature:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The file will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"必須從 Microsoft 下載附加檔案 (“%s”) 才能使用此功能:\n"
+"- 選 '是' 將連線到網路並進行下載\n"
+"- 選 '否' 將取消操作\n"
+"\n"
+"註: 該檔案將被下載到 Rufus 所在的資料夾中，如果已存在將會自動使用。"
+
+#. • MSG_338
+msgid "Revoked UEFI bootloader detected"
+msgstr "偵測到被撤銷的 UEFI 開機引導程式"
+
+#. • MSG_339
+msgid ""
+"Rufus detected that the ISO you have selected contains a UEFI bootloader that has been revoked and that will produce %s, when Secure Boot is enabled on a fully up to date UEFI system.\n"
+"\n"
+"- If you obtained this ISO image from a non reputable source, you should consider the possibility that it might contain UEFI malware and avoid booting from it.\n"
+"- If you obtained it from a trusted source, you should try to locate a more up to date version, that will not produce this warning."
+msgstr ""
+"Rufus 偵測到選取的 ISO 包含一個被撤銷的 UEFI 開機引導程式，當你在完全更新的 UEFI 系統上啟用安全開機時，將產生 %s。\n"
+"\n"
+"- 如果你從無法信任的來源取得這個 ISO 映像，應該考慮到它可能包含 UEFI 惡意程式，並避免以此進行開機。\n"
+"- 如果你從可以信任的來源取得，應該嘗試找到一個更新的版本，才不會出現這個警告。"
+
+#. • MSG_340
+msgid "a \"Security Violation\" screen"
+msgstr "一個 \"安全違規\" 畫面"
+
+#. • MSG_341
+msgid "a Windows Recovery Screen (BSOD) with '%s'"
+msgstr "一個有著 '%s' 的 Windows 復原畫面 (BSOD)"
+
+#. • MSG_342
+msgid "Compressed VHDX Image"
+msgstr "壓縮後的 VHDX 映像"
+
+#. • MSG_343
+msgid "Uncompressed VHD Image"
+msgstr "未壓縮的 VHD 映像"
+
+#. • MSG_344
+msgid "Full Flash Update Image"
+msgstr "完整寫入更新映像"
+
+#. • MSG_345
+msgid ""
+"Some additional data must be downloaded from Microsoft to use this functionality:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation"
+msgstr ""
+"必須從微軟下載一些額外的資料才能使用此功能:\n"
+"- 選 '是' 將連線到網路並進行下載\n"
+"- 選 '否' 將取消操作"
+
+#. • MSG_346
+msgid "Restrict Windows to S-Mode (INCOMPATIBLE with online account bypass)"
+msgstr "將 Windows 限制為 S-模式 (不相容繞過線上帳號)。"
+
+#. • MSG_347
+msgid "Expert Mode"
+msgstr "專家模式"
+
+#. • MSG_348
+msgid "Extracting archive files: %s"
+msgstr "正在擷取封存檔案: %s"
+
+#. • MSG_349
+msgid "Use Rufus MBR"
+msgstr "使用 Rufus MBR"
+
+#. • MSG_350
+msgid "Use 'Windows CA 2023' signed bootloaders (Requires a compatible target PC)"
+msgstr "使用以 Windows CA 2023 簽署的開機引導程式 (需搭配相容的電腦)"
+
+#. • MSG_351
+msgid "Checking for UEFI bootloader revocation..."
+msgstr "正在檢查 UEFI 開機引導程式是否被撤銷…"
+
+#. • MSG_352
+msgid "Checking for UEFI DBX updates..."
+msgstr "正在檢查 UEFI DBX 更新…"
+
+#. • MSG_353
+msgid "DBX update available"
+msgstr "有可用的 DBX 更新"
+
+#. • MSG_354
+msgid ""
+"Rufus has found an updated version of the DBX files used to perform UEFI Secure Boot revocation checks. Do you want to download this update?\n"
+"- Select 'Yes' to connect to the Internet and download this content\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The files will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"Rufus 發現用於執行 UEFI 安全開機撤銷檢查的 DBX 檔案更新版本，是否下載此更新？\n"
+"- 選擇 '是': 將連線到網路並進行下載\n"
+"- 選擇 '否': 取消此操作\n"
+"\n"
+"註: 該檔案將被下載到 Rufus 所在的資料夾中，如果已存在將會自動使用。"
+
+#. • MSG_355
+msgid "⚠SILENTLY⚠ erase disk and install:"
+msgstr "以 ⚠靜默模式⚠ 清除磁碟並進行安裝:"
+
+#. • MSG_356
+msgid ""
+"You have selected to use the \"silent\" Windows installation option.\n"
+"\n"
+"This is an advanced option, reserved for people who want to create media that does not prompt the user during Windows installation and therefore UNCONDITIONALLY ERASES the first detected disk on the target system. If you are not careful, using this option can result in IRREVERSIBLE DATA LOSS!\n"
+"\n"
+"If this is not what you want, please select 'No' to go back and uncheck the option.\n"
+"Otherwise, if you select 'Yes', you agree that the whole responsibility for any data loss will be entirely with YOU."
+msgstr ""
+"你已選擇使用 \"靜默\" Windows 安裝選項。\n"
+"\n"
+"此為進階選項，僅供希望建立在安裝 Windows 過程中不提示使用者的安裝媒體之使用者使用，過程中會直接清除目標系統中偵測到的第一顆磁碟。\n"
+"\n"
+"若操作不慎，此選項可能導致發生無法復原的資料遺失!\n"
+"\n"
+"如果這不是你想要的結果，請選擇 '否' 返回並取消勾選此選項。\n"
+"若你選擇 '是'，表示你了解且同意承擔所有可能發生的資料遺失風險。"
+
+#. • MSG_358
+msgid "Unsupported image location"
+msgstr "不支援的映像檔位置"
+
+#. • MSG_359
+msgid ""
+"You cannot use an image that is located on the target drive, since that drive is going to be completely erased. It's the same thing as trying to saw the branch you are sitting on!\n"
+"\n"
+"Please move the image to a different location and try again."
+msgstr ""
+"你無法使用位於目標磁碟上的映像檔，因為該磁碟將會被完全清除。這就像是試圖鋸斷自己正坐著的樹枝一樣!\n"
+"\n"
+"請將映像檔移至其它位置後再試一次。"
+
+#. • MSG_360
+msgid "It is safe to leave this option enabled even if you have a TPM or more RAM, as this option only bypasses the setup requirements and does not actually prevent Windows from using all the hardware available."
+msgstr "即使支援 TPM 或有更大的記憶體容量，保持啟用此選項也是安全的，因為此選項僅會略過硬體安裝需求，並不會影響 Windows 使用所有可用的硬體資源。"
+
+#. • MSG_361
+msgid "For this option to work, network/Internet MUST be disconnected during installation!"
+msgstr "為了讓此選項生效，安裝過程中必須切斷網路連線!"
+
+#. • MSG_362
+msgid "Automatically answer 'no' to the Windows setup questions relating to the sharing of data with Microsoft, instead of prompting the user."
+msgstr "自動拒絕 Windows 初始化中與微軟共享資料的相關問題，而非提示使用者進行選擇。"
+
+#. • MSG_363
+msgid "You should leave this option enabled, unless you are okay with 'Windows To Go' accessing internal disks and silently performing irreversible file system upgrades."
+msgstr "除非你可以接受 'Windows To Go' 存取內部磁碟，並在未經提示的情況下執行不可逆的檔案系統升級，否則建議保持啟用此選項。"
+
+#. • MSG_364
+msgid "Automatically create a local account with the specified user name, using an empty password that will need to be changed on next logon."
+msgstr "自動以指定的使用者名稱建立本機帳戶，並設定空白密碼，該密碼需在下次登入時進行變更。"
+
+#. • MSG_365
+msgid "Duplicate the regional settings from this PC (keyboard, timezone, currency), instead of prompting the user."
+msgstr "複製此電腦的區域設定 (鍵盤、時區、貨幣)，而非提示使用者進行選擇。"
+
+#. • MSG_366
+msgid "Don't encrypt the system disk, unless explicitly requested by the user."
+msgstr "除非使用者明確要求，否則不要加密系統磁碟。"
+
+#. • MSG_367
+msgid "Use this option only if you know what S-Mode is and understand that your system may be locked into S-Mode even after you completely erase and reinstall Windows."
+msgstr "僅在你了解 S 模式是什麼，且知道即使完全清除並重新安裝 Windows，系統仍可能被鎖定在 S 模式的情況下使用此選項。"
+
+#. • MSG_368
+msgid "Use this option if the system you plan to install Windows on is using fully up-to-date Secure Boot certificates. If needed, you can look into using 'Mosby' to update your system."
+msgstr "若你打算安裝 Windows 的系統已完整更新過安全開機憑證，請使用此選項。若有需要，你可以考慮使用 'Mosby' 來更新系統。"
+
+#. • MSG_369
+msgid "Use this option if you want to revoke additional potentially unsafe Windows bootloaders, but with the potential of also preventing standard Windows media from booting."
+msgstr "如果你希望撤銷更多可能不安全的 Windows 開機引導程式，請使用此選項，但此操作有可能導致標準 Windows 安裝媒體無法開機。"
+
+#. • MSG_370
+msgid "\"Quality of Life\" enhancements: Disable most of the unwanted features Microsoft is trying to force onto end users."
+msgstr "Windows 體驗增強: 停用微軟試圖強制提供給終端使用者的大多數不必要功能。"
+
+#. • MSG_371
+msgid "If you use this option, please make sure to disconnect every disk from the target PC, except the one you want to install Windows on, as well as not leave the media plugged into any PC you don't want to erase."
+msgstr "如果你使用此選項，請確保目標電腦中除了要安裝 Windows 的磁碟以外，其它所有磁碟都已斷開連接，並且不要將安裝媒體插在任何你不想被清除資料的電腦上。"
+
+#. • MSG_900
+#.
+#. The following messages are for the Windows Store listing only and are not used by the application
+msgid "Rufus is a utility that helps format and create bootable USB flash drives, such as USB keys/pendrives, memory sticks, etc."
+msgstr "Rufus 是個能格式化並製作可開機 USB 快閃磁碟 (如 USB 隨身碟等) 的工具。"
+
+#. • MSG_901
+msgid "Official site: %s"
+msgstr "官方網站: %s"
+
+#. • MSG_902
+msgid "Source Code: %s"
+msgstr "原始碼: %s"
+
+#. • MSG_903
+msgid "ChangeLog: %s"
+msgstr "更新日誌: %s"
+
+#. • MSG_904
+#.
+#. The gnu.org website has many translations of the GPL (such as https://www.gnu.org/licenses/gpl-3.0.zh-cn.html, https://www.gnu.org/licenses/gpl-3.0.fr.html)
+#. Please make sure you try to locate the relevant https://www.gnu.org/licenses/gpl-3.0.<LANG-ID>.html for your language and use it here.
+msgid ""
+"This application is licensed under the terms of the GNU Public License (GPL) version 3.\n"
+"See https://www.gnu.org/licenses/gpl-3.0.en.html for details."
+msgstr ""
+"本應用採用 GNU 通用公共許可證 (GPL) 第三版。\n"
+"具體許可證見 https://www.gnu.org/licenses/gpl-3.0.zh-tw.html。"
+
+#. • MSG_905
+#.
+#. Keyword for "boot" will be used for search in the Windows Store
+msgid "Boot"
+msgstr "啟動"
+
+#. • MSG_910
+#.
+#. This and subsequent messages will be listed in the 'Features' section of the Windows Store page
+msgid "Format USB, flash card and virtual drives to FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+msgstr "將隨身碟、記憶卡或虛擬光碟機格式化為 FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3 格式"
+
+#. • MSG_911
+msgid "Create FreeDOS bootable USB drives"
+msgstr "建立 FreeDOS  可開機隨身碟"
+
+#. • MSG_912
+msgid "Create bootable drives from bootable ISOs (Windows, Linux, etc.)"
+msgstr "從可開機 ISO 檔案 (Windows 和 Linux 等) 建立可開機隨身碟"
+
+#. • MSG_913
+msgid "Create bootable drives from bootable disk images, including compressed ones"
+msgstr "從可開機硬碟映像檔 (包括壓縮映像檔) 建立可開機隨身碟"
+
+#. • MSG_914
+msgid "Create BIOS or UEFI bootable drives, including UEFI bootable NTFS"
+msgstr "建立 BIOS 或 UEFI 可開機隨身碟，包括 UEFI 下的可開機  NTFS 隨身碟"
+
+#. • MSG_915
+msgid "Create 'Windows To Go' drives"
+msgstr "建立 'Windows To Go' 隨身碟"
+
+#. • MSG_916
+msgid "Create Windows 11 installation drives for PCs that don't have TPM or Secure Boot"
+msgstr "為沒有 TPM 或安全開機功能的電腦建立 Windows 11 安裝隨身碟"
+
+#. • MSG_917
+msgid "Create persistent Linux partitions"
+msgstr "建立持續性 Linux 磁區"
+
+#. • MSG_918
+msgid "Create VHD/DD images of the selected drive"
+msgstr "為選取的磁碟機建立 VHD/DD 映像檔"
+
+#. • MSG_919
+msgid "Compute MD5, SHA-1, SHA-256 and SHA-512 checksums of the selected image"
+msgstr "計算被選取映像的 MD5、SHA-1、SHA-256 和 SHA-512 檢查碼"
+
+#. • MSG_920
+msgid "Perform bad blocks checks, including detection of \"fake\" flash drives"
+msgstr ""
+"執行壞軌檢查，包括對 ”假“ USB 快閃磁碟\n"
+"的偵測"
+
+#. • MSG_921
+msgid "Download official Microsoft Windows retail ISOs"
+msgstr "下載微軟官方 Windows 映像檔"
+
+#. • MSG_922
+msgid "Download UEFI Shell ISOs"
+msgstr "下載 UEFI Shell 映像檔"

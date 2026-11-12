@@ -1,7 +1,7 @@
 /*
  * Bled (Base Library for Easy Decompression)
  *
- * Copyright © 2014-2020 Pete Batard <pete@akeo.ie>
+ * Copyright © 2014-2026 Pete Batard <pete@akeo.ie>
  *
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
@@ -15,24 +15,26 @@
 #include "bb_archive.h"
 #include "bled.h"
 
-typedef long long int(*unpacker_t)(transformer_state_t *xstate);
-
 /* Globals */
 smallint bb_got_signal;
-uint64_t bb_total_rb;
+uint64_t bb_total_rb, bb_total_wb;
 printf_t bled_printf = NULL;
 read_t bled_read = NULL;
 write_t bled_write = NULL;
 progress_t bled_progress = NULL;
 switch_t bled_switch = NULL;
 unsigned long* bled_cancel_request;
-static bool bled_initialized = 0;
+bool bled_initialized = 0;
 jmp_buf bb_error_jmp;
 char* bb_virtual_buf = NULL;
 size_t bb_virtual_len = 0, bb_virtual_pos = 0;
 int bb_virtual_fd = -1;
+bool bb_progress_on_write = 0;
+// ZSTD has a minimal buffer size of (1 << ZSTD_BLOCKSIZELOG_MAX) + ZSTD_blockHeaderSize = 128 KB + 3
+// So we set our bufsize to 256 KB
+uint32_t BB_BUFSIZE = 0x40000;
 
-static long long int unpack_none(transformer_state_t *xstate)
+static int64_t unpack_none(transformer_state_t *xstate)
 {
 	bb_error_msg("This compression type is not supported");
 	return -1;
@@ -48,13 +50,14 @@ unpacker_t unpacker[BLED_COMPRESSION_MAX] = {
 	unpack_xz_stream,
 	unpack_none,
 	unpack_vtsi_stream,
+	unpack_zstd_stream,
 };
 
 /* Uncompress file 'src', compressed using 'type', to file 'dst' */
 int64_t bled_uncompress(const char* src, const char* dst, int type)
 {
 	transformer_state_t xstate;
-	int64_t ret;
+	int64_t ret = -1;
 
 	if (!bled_initialized) {
 		bb_error_msg("The library has not been initialized");
@@ -62,10 +65,10 @@ int64_t bled_uncompress(const char* src, const char* dst, int type)
 	}
 
 	bb_total_rb = 0;
+	bb_total_wb = 0;
 	init_transformer_state(&xstate);
 	xstate.src_fd = -1;
 	xstate.dst_fd = -1;
-	xstate.check_signature = 1;
 
 	xstate.src_fd = _openU(src, _O_RDONLY | _O_BINARY, 0);
 	if (xstate.src_fd < 0) {
@@ -84,19 +87,26 @@ int64_t bled_uncompress(const char* src, const char* dst, int type)
 		goto err;
 	}
 
+	if (bled_progress != NULL) {
+		xstate.src_size = lseek(xstate.src_fd, 0, SEEK_END);
+		xstate.dst_size = get_uncompressed_size(xstate.src_fd, type);
+
+		bb_progress_on_write = (xstate.dst_size > 0);
+		bled_progress(bb_progress_on_write ? -xstate.dst_size : -xstate.src_size);
+	}
+
 	if (setjmp(bb_error_jmp))
 		goto err;
+
 	ret = unpacker[type](&xstate);
-	_close(xstate.src_fd);
-	_close(xstate.dst_fd);
-	return ret;
 
 err:
+	free(xstate.dst_name);
 	if (xstate.src_fd > 0)
 		_close(xstate.src_fd);
 	if (xstate.dst_fd > 0)
 		_close(xstate.dst_fd);
-	return -1;
+	return ret;
 }
 
 /* Uncompress using Windows handles */
@@ -110,10 +120,10 @@ int64_t bled_uncompress_with_handles(HANDLE hSrc, HANDLE hDst, int type)
 	}
 
 	bb_total_rb = 0;
+	bb_total_wb = 0;
 	init_transformer_state(&xstate);
 	xstate.src_fd = -1;
 	xstate.dst_fd = -1;
-	xstate.check_signature = 1;
 
 	xstate.src_fd = _open_osfhandle((intptr_t)hSrc, _O_RDONLY);
 	if (xstate.src_fd < 0) {
@@ -132,8 +142,16 @@ int64_t bled_uncompress_with_handles(HANDLE hSrc, HANDLE hDst, int type)
 		return -1;
 	}
 
+	if (bled_progress != NULL) {
+		xstate.src_size = lseek(xstate.src_fd, 0, SEEK_END);
+		xstate.dst_size = get_uncompressed_size(xstate.src_fd, type);
+		bb_progress_on_write = (xstate.dst_size > 0);
+		bled_progress(bb_progress_on_write ? -xstate.dst_size : -xstate.src_size);
+	}
+
 	if (setjmp(bb_error_jmp))
 		return -1;
+
 	return unpacker[type](&xstate);
 }
 
@@ -141,7 +159,7 @@ int64_t bled_uncompress_with_handles(HANDLE hSrc, HANDLE hDst, int type)
 int64_t bled_uncompress_to_buffer(const char* src, char* buf, size_t size, int type)
 {
 	transformer_state_t xstate;
-	int64_t ret;
+	int64_t ret = -1;
 
 	if (!bled_initialized) {
 		bb_error_msg("The library has not been initialized");
@@ -154,10 +172,10 @@ int64_t bled_uncompress_to_buffer(const char* src, char* buf, size_t size, int t
 	}
 
 	bb_total_rb = 0;
+	bb_total_wb = 0;
 	init_transformer_state(&xstate);
 	xstate.src_fd = -1;
 	xstate.dst_fd = -1;
-	xstate.check_signature = 1;
 
 	if (src[0] == 0) {
 		xstate.src_fd = bb_virtual_fd;
@@ -178,24 +196,30 @@ int64_t bled_uncompress_to_buffer(const char* src, char* buf, size_t size, int t
 		goto err;
 	}
 
+	if (bled_progress != NULL) {
+		xstate.src_size = lseek(xstate.src_fd, 0, SEEK_END);
+		xstate.dst_size = get_uncompressed_size(xstate.src_fd, type);
+		bb_progress_on_write = (xstate.dst_size > 0);
+		bled_progress(bb_progress_on_write ? -xstate.dst_size : -xstate.src_size);
+	}
+
 	if (setjmp(bb_error_jmp))
 		goto err;
+
 	ret = unpacker[type](&xstate);
-	if (src[0] != 0)
-		_close(xstate.src_fd);
-	return ret;
 
 err:
-	if (xstate.src_fd > 0)
+	free(xstate.dst_name);
+	if ((src[0] != 0) && (xstate.src_fd > 0))
 		_close(xstate.src_fd);
-	return -1;
+	return ret;
 }
 
 /* Uncompress all files from archive 'src', compressed using 'type', to destination dir 'dir' */
 int64_t bled_uncompress_to_dir(const char* src, const char* dir, int type)
 {
 	transformer_state_t xstate;
-	int64_t ret;
+	int64_t ret = -1;
 
 	if (!bled_initialized) {
 		bb_error_msg("The library has not been initialized");
@@ -203,10 +227,10 @@ int64_t bled_uncompress_to_dir(const char* src, const char* dir, int type)
 	}
 
 	bb_total_rb = 0;
+	bb_total_wb = 0;
 	init_transformer_state(&xstate);
 	xstate.src_fd = -1;
 	xstate.dst_fd = -1;
-	xstate.check_signature = 1;
 
 	xstate.src_fd = _openU(src, _O_RDONLY | _O_BINARY, 0);
 	if (xstate.src_fd < 0) {
@@ -222,20 +246,25 @@ int64_t bled_uncompress_to_dir(const char* src, const char* dir, int type)
 		goto err;
 	}
 
+	if (bled_progress != NULL) {
+		xstate.src_size = lseek(xstate.src_fd, 0, SEEK_END);
+		xstate.dst_size = 0;
+		bb_progress_on_write = 0;
+		bled_progress(-xstate.src_size);
+	}
+
 	if (setjmp(bb_error_jmp))
 		goto err;
+
 	ret = unpacker[type](&xstate);
-	_close(xstate.src_fd);
-	if (xstate.dst_fd > 0)
-		_close(xstate.dst_fd);
-	return ret;
 
 err:
+	free(xstate.dst_name);
 	if (xstate.src_fd > 0)
 		_close(xstate.src_fd);
 	if (xstate.dst_fd > 0)
 		_close(xstate.dst_fd);
-	return -1;
+	return ret;
 }
 
 int64_t bled_uncompress_from_buffer_to_buffer(const char* src, const size_t src_len, char* dst, size_t dst_len, int type)
@@ -271,8 +300,37 @@ int64_t bled_uncompress_from_buffer_to_buffer(const char* src, const size_t src_
 	return ret;
 }
 
+/* Get the decompressed size of file 'src', compressed using 'type' */
+int64_t bled_get_uncompressed_size(const char* src, int type)
+{
+	int fd = -1;
+	int64_t ret = -1;
+
+	if (!bled_initialized) {
+		bb_error_msg("The library has not been initialized");
+		return -1;
+	}
+
+	if ((type < 0) || (type >= BLED_COMPRESSION_MAX)) {
+		bb_error_msg("Unsupported compression format");
+		goto err;
+	}
+
+	fd = _openU(src, _O_RDONLY | _O_BINARY, 0);
+	if (fd < 0)
+		return -1;
+
+	ret = get_uncompressed_size(fd, type);
+
+err:
+	if (fd > 0)
+		_close(fd);
+	return ret;
+}
+
 /* Initialize the library.
- * When the parameters are not NULL you can:
+ * When the parameters are not NULL or zero you can:
+ * - specify the buffer size to use (must be larger than 256KB and a power of two)
  * - specify the printf-like function you want to use to output message
  *   void print_function(const char* format, ...);
  * - specify the read/write functions you want to use;
@@ -282,18 +340,25 @@ int64_t bled_uncompress_from_buffer_to_buffer(const char* src, const size_t src_
  *   void switch_function(const char* filename, const uint64_t filesize);
  * - point to an unsigned long variable, to be used to cancel operations when set to non zero
  */
-int bled_init(printf_t print_function, read_t read_function, write_t write_function, 
+int bled_init(uint32_t buffer_size, printf_t print_function, read_t read_function, write_t write_function,
 	progress_t progress_function, switch_t switch_function, unsigned long* cancel_request)
 {
 	if (bled_initialized)
 		return -1;
-	bled_initialized = true;
+	BB_BUFSIZE = buffer_size;
+	/* buffer_size must be larger than 256 KB and a power of two */
+	if (buffer_size < 0x40000 || (buffer_size & (buffer_size - 1)) != 0) {
+		if (buffer_size != 0 && print_function != NULL)
+			print_function("bled_init: invalid buffer_size, defaulting to 64 KB");
+		BB_BUFSIZE = 0x40000;
+	}
 	bled_printf = print_function;
 	bled_read = read_function;
 	bled_write = write_function;
 	bled_progress = progress_function;
 	bled_switch = switch_function;
 	bled_cancel_request = cancel_request;
+	bled_initialized = true;
 	return 0;
 }
 

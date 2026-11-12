@@ -20,7 +20,7 @@ case $MINOR in *[!0-9]*)
   exit 1
 esac
 echo "changing version to $MAJOR.$MINOR"
-sed -i -e "s/^AC_INIT(\[\([^ ]*\)\], \[[^ ]*\]\(.*\)/AC_INIT([\1], [$MAJOR.$MINOR]\2/" configure.ac
+sed -i -e "s/^AC_INIT\(\[([^]]*)\],\[[0-9]+\.[0-9]+\](.*)/AC_INIT([\1],[$MAJOR.$MINOR]\2/" configure.ac
 cat > cmd.sed <<\_EOF
 s/^\([ \t]*\)\(FILE\|PRODUCT\)VERSION\([ \t]*\)[0-9]*,[0-9]*\(.*\)/\1\2VERSION\3@@MAJOR@@,@@MINOR@@\4/
 s/^\([ \t]*\)VALUE\([ \t]*\)"\(File\|Product\)Version",\([ \t]*\)"[0-9]*\.[0-9]*\.\(.*\)/\1VALUE\2"\3Version",\4"@@MAJOR@@.@@MINOR@@.\5/
@@ -33,7 +33,5 @@ _EOF
 # First run sed to substitute our variable in the sed command file
 sed -i -e "s/@@MAJOR@@/$MAJOR/g" -e "s/@@MINOR@@/$MINOR/g" cmd.sed
 sed -b -i -f cmd.sed src/rufus.rc
-sed -b -i -f cmd.sed res/appstore/Package.appxmanifest
-sed -b -i -f cmd.sed res/appstore/packme.cmd
 rm cmd.sed
 source ./bootstrap.sh

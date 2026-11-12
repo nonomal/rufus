@@ -1,9 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: 3.14\n"
+"Project-Id-Version: 4.14\n"
 "Report-Msgid-Bugs-To: pete@akeo.ie\n"
-"POT-Creation-Date: 2021-04-02 09:45+0200\n"
-"PO-Revision-Date: 2021-04-02 09:59+0200\n"
+"POT-Creation-Date: 2026-03-23 18:59+0000\n"
+"PO-Revision-Date: 2026-03-23 19:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -11,9 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Rufus-LanguageName: Dutch (Nederlands)\n"
 "X-Rufus-LCID: 0x0413, 0x0813\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.9\n"
 
 #. • IDD_DIALOG → IDS_DRIVE_PROPERTIES_TXT
 msgid "Drive Properties"
@@ -54,13 +54,11 @@ msgstr "USB-harde schijven weergeven"
 msgid "Add fixes for old BIOSes (extra partition, align, etc.)"
 msgstr "Oplossingen voor oude BIOS'en toevoegen (extra partitie, uitlijnen, etc.)"
 
-#. • IDD_DIALOG → IDC_RUFUS_MBR
+#. • IDD_DIALOG → IDC_UEFI_MEDIA_VALIDATION
 #.
-#. 'MBR': See http://en.wikipedia.org/wiki/Master_boot_record
-#. Rufus can install it's own custom MBR (the Rufus MBR), which also allows users to
-#. specify a custom disk ID for the BIOS. The tooltip for this control is MSG_167.
-msgid "Use Rufus MBR with BIOS ID"
-msgstr "Rufus MBR met BIOS ID gebruiken"
+#. It is acceptable to drop the "runtime" if you are running out of space
+msgid "Enable runtime UEFI media validation"
+msgstr "Media-validatie via UEFI inschakelen"
 
 #. • IDD_DIALOG → IDS_FORMAT_OPTIONS_TXT
 msgid "Format Options"
@@ -92,7 +90,7 @@ msgstr "Uitgebreid label en pictogrambestanden aanmaken"
 
 #. • IDD_DIALOG → IDS_STATUS_TXT
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #. • IDD_DIALOG → IDCANCEL
 #. • IDD_LICENSE → IDCANCEL
@@ -139,7 +137,7 @@ msgstr "Nee"
 
 #. • IDD_LOG → IDD_LOG
 msgid "Log"
-msgstr "Log"
+msgstr "Logboek"
 
 #. • IDD_LOG → IDC_LOG_CLEAR
 msgid "Clear"
@@ -282,7 +280,7 @@ msgstr "Laatste versie: %d.%d (Build %d)"
 #. • MSG_020
 #. • MSG_026
 msgid "bytes"
-msgstr "bytes"
+msgstr ""
 
 #. • MSG_021
 #.
@@ -294,25 +292,25 @@ msgstr "kB"
 #.
 #. *Short* version of the megabyte size suffix
 msgid "MB"
-msgstr "MB"
+msgstr ""
 
 #. • MSG_023
 #.
 #. *Short* version of the gigabyte size suffix
 msgid "GB"
-msgstr "GB"
+msgstr ""
 
 #. • MSG_024
 #.
 #. *Short* version of the terabyte size suffix
 msgid "TB"
-msgstr "TB"
+msgstr ""
 
 #. • MSG_025
 #.
-#. *Short* version of the pentabyte size suffix
+#. *Short* version of the petabyte size suffix
 msgid "PB"
-msgstr "PB"
+msgstr ""
 
 #. • MSG_027
 msgid "kilobytes"
@@ -811,15 +809,15 @@ msgstr "Standaard Windows-installatie"
 #. http://en.wikipedia.org/wiki/Windows_To_Go in your language.
 #. Otherwise, you may add a parenthesis eg. "Windows To Go (<hint at what it does>)"
 msgid "Windows To Go"
-msgstr "Windows To Go"
+msgstr ""
 
 #. • MSG_119
 msgid "advanced drive properties"
-msgstr "Geavanceerde eigenschappen van drive"
+msgstr "geavanceerde eigenschappen van drive"
 
 #. • MSG_120
 msgid "advanced format options"
-msgstr "Geavanceerde opties voor formatteren"
+msgstr "geavanceerde opties voor formatteren"
 
 #. • MSG_121
 msgid "Show %s"
@@ -848,7 +846,7 @@ msgstr "Geen persistentie"
 
 #. • MSG_125
 #.
-#. Tooltips used for the peristence size slider and edit control
+#. Tooltips used for the persistence size slider and edit control
 msgid "Set the size of the persistent partition for live USB media. Setting the size to 0 disables the persistent partition."
 msgstr "De grootte van de persistente partitie instellen voor live USB-media. De grootte op 0 instellen schakelt de persistente partitie uit."
 
@@ -890,17 +888,17 @@ msgstr "Een ander programma of proces gebruikt deze schijf. Wilt u ze toch forma
 
 #. • MSG_133
 msgid ""
-"Rufus has detected that you are attempting to create a Windows To Go media based on a 1809 ISO.\n"
+"Rufus has detected that you are attempting to create a 'Windows To Go' media based on a 1809 ISO.\n"
 "\n"
 "Because of a *MICROSOFT BUG*, this media will crash during Windows boot (Blue Screen Of Death), unless you manually replace the file 'WppRecorder.sys' with a 1803 version.\n"
 "\n"
 "Also note that the reason Rufus cannot automatically fix this for you is that 'WppRecorder.sys' is a Microsoft copyrighted file, so we cannot legally embed a copy of the file in the application..."
 msgstr ""
-"Rufus heeft gedetecteerd dat u probeert om een Windows To Go medium aan te maken gebaseerd op een 1809-ISO\n"
+"Rufus heeft vastgesteld dat u probeert een ‘Windows To Go’-medium te maken op basis van een 1809-ISO.\n"
 "\n"
-"Door een *MICROSOFT-BUG* zal dit medium crashen tijdens het opstarten van Windows (Blue Screen Of Death), tenzij u manueel het bestand 'WppRecorder.sys' vervangt door een 1803-versie.\n"
+"Vanwege een *MICROSOFT-BUG* zal dit medium tijdens het opstarten van Windows crashen (Blue Screen Of Death), tenzij u het bestand ‘WppRecorder.sys’ handmatig vervangt door een versie uit 1803.\n"
 "\n"
-"Merk ook op dat Rufus dit voor u niet automatisch kan oplossen omdat 'WppRecorder.sys' een Microsoft-auteursrecht heeft, dus we kunnen geen kopie van het bestand in de toepassing inbedden op een legale manier..."
+"Houd er ook rekening mee dat Rufus dit niet automatisch voor u kan oplossen omdat ‘WppRecorder.sys’ een door Microsoft auteursrechtelijk beschermd bestand is, waardoor we wettelijk gezien geen kopie van het bestand in de applicatie mogen opnemen..."
 
 #. • MSG_134
 msgid ""
@@ -918,7 +916,7 @@ msgstr "Versie"
 
 #. • MSG_136
 msgid "Release"
-msgstr "Release"
+msgstr ""
 
 #. • MSG_137
 msgid "Edition"
@@ -949,8 +947,8 @@ msgid "Download using a browser"
 msgstr "Downloaden via een browser"
 
 #. • MSG_144
-msgid "Temporarily banned by Microsoft for requesting too many downloads - Please try again later..."
-msgstr "Tijdelijk geblokkeerd door Microsoft door het aanvragen van te veel downloads - Probeer het later opnieuw..."
+msgid "Download of Windows ISOs is unavailable due to Microsoft having altered their website to prevent it."
+msgstr "Downloaden van Windows ISO's is niet mogelijk omdat Microsoft hun website heeft aangepast om dit te voorkomen."
 
 #. • MSG_145
 msgid "PowerShell 3.0 or later is required to run this script."
@@ -1043,16 +1041,8 @@ msgid "Check this box to allow the display of international labels and set a dev
 msgstr "Aanvinken om weergave van internationale labels toe te laten en een apparaat-pictogram in te stellen (maakt een autorun.inf aan)"
 
 #. • MSG_167
-msgid "Install an MBR that allows boot selection and can masquerade the BIOS USB drive ID"
-msgstr "Installeert een MBR die een opstartselectie toestaat en de BIOS USB-drive ID kan verbergen"
-
-#. • MSG_168
-msgid ""
-"Try to masquerade first bootable USB drive (usually 0x80) as a different disk.\n"
-"This should only be necessary if you install Windows XP and have more than one disk."
-msgstr ""
-"Probeert de eerste opstartbare USB drive (gewoonlijk 0x80) voor te laten doen als een andere schijf.\n"
-"Dit is alleen nodig als u Windows XP installeert en meer dan één schijf heeft."
+msgid "Install a UEFI bootloader, that will perform MD5Sum file validation of the media"
+msgstr "Installeert een UEFI-bootloader die bij elke opstart vanaf het medium een MD5Sum-bestandsvalidatie uitvoert op het medium zelf"
 
 #. • MSG_169
 msgid ""
@@ -1202,6 +1192,10 @@ msgstr "Niet-standaard sectorgrootte gedetecteerd"
 #. • MSG_198
 msgid "'Windows To Go' can only be installed on a GPT partitioned drive if it has the FIXED attribute set. The current drive was not detected as FIXED."
 msgstr "'Windows To Go' kan alleen geïnstalleerd worden op een GPT-gepartitioneerde schijf als het FIXED-attribuut ingesteld is. De huidige drive wordt niet herkend als FIXED."
+
+#. • MSG_199
+msgid "This feature is not available on this platform."
+msgstr "Deze functie is niet beschikbaar op dit platform."
 
 #. • MSG_201
 msgid "Cancelling - Please wait..."
@@ -1647,8 +1641,12 @@ msgid "Unsupported Windows version"
 msgstr "Niet ondersteunde Windows-versie"
 
 #. • MSG_294
-msgid "This version of Windows is no longer supported by Rufus."
-msgstr "Deze Windows-versie wordt niet langer ondersteund door Rufus."
+msgid ""
+"This version of Windows is no longer supported by Rufus.\n"
+"The last version of Rufus compatible with this platform is v%d.%d."
+msgstr ""
+"Deze Windows-versie wordt niet langer ondersteund door Rufus.\n"
+"De laatste versie van Rufus die compatibel is met dit platform is v%d.%d."
 
 #. • MSG_295
 msgid "Warning: Unofficial version"
@@ -1713,8 +1711,8 @@ msgid "Create a disk image of the selected device"
 msgstr "Een schijf-image aanmaken van het geselecteerde apparaat"
 
 #. • MSG_305
-msgid "Use this option to indicate whether you want to use this device to install Windows on another disk, or if you want to run Windows directly from this drive (Windows To Go)."
-msgstr "Gebruik deze optie om aan te geven of u dit apparaat wilt gebruiken om Windows op een andere schijf te installeren, of als u Windows rechtstreeks vanaf deze schijf wilt opstarten (Windows To Go)."
+msgid "Use this option to indicate if you plan to install Windows to a different disk, or if you want to run Windows directly from this drive (Windows To Go)."
+msgstr "Gebruik deze optie om aan te geven of u Windows op een andere schijf wilt installeren, of als u Windows rechtstreeks vanaf deze schijf wilt opstarten (Windows To Go)."
 
 #. • MSG_306
 #.
@@ -1724,8 +1722,8 @@ msgid "Fast-zeroing drive: %s"
 msgstr "Snel nullen schrijven: %s"
 
 #. • MSG_307
-msgid "This may take a while"
-msgstr "Dit kan een tijdje duren"
+msgid "this may take a while"
+msgstr "dit kan een tijdje duren"
 
 #. • MSG_308
 msgid "VHD detection"
@@ -1751,7 +1749,7 @@ msgstr "Gebruik %s (in het hoofdvenster) om in te schakelen."
 
 #. • MSG_312
 msgid "Extra hashes (SHA512)"
-msgstr "Extra hashes (SHA512)"
+msgstr ""
 
 #. • MSG_313
 msgid "Save to VHD"
@@ -1792,3 +1790,342 @@ msgid ""
 msgstr ""
 "De image die u hebt geselecteerd is een ISOHybrid, maar de makers ervan hebben hem niet compatibel gemaakt met de ISO/bestandskopieermodus.\n"
 "Als gevolg daarvan zal de DD-image schrijfmodus worden afgedwongen."
+
+#. • MSG_322
+msgid "Unable to open or read '%s'"
+msgstr "Kan '%s' niet openen of lezen"
+
+#. • MSG_323
+msgid "Apply SkuSiPolicy.p7b on installation (See KB5042562)"
+msgstr "SkuSiPolicy.p7b toepassen tijdens installatie (zie KB5042562)"
+
+#. • MSG_324
+msgid "QoL improvements (Don't force Copilot, OneDrive, Outlook, Fast Startup, etc.)"
+msgstr "Verbeteringen in de gebruikersvriendelijkheid (Copilot, Onedrive, Outlook, Fast Startup, enz niet forceren)"
+
+#. • MSG_325
+msgid "Applying Windows customization: %s"
+msgstr "Windows aanpassen: %s"
+
+#. • MSG_326
+msgid "Applying user options..."
+msgstr "Gebruikersopties toepassen..."
+
+#. • MSG_327
+msgid "Windows User Experience"
+msgstr "Windows gebruikerservaring"
+
+#. • MSG_328
+msgid "Customize Windows installation?"
+msgstr "Windows-installatie aanpassen?"
+
+#. • MSG_329
+msgid "Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0"
+msgstr "Verwijder de vereiste voor 4GB+ RAM, Secure Boot en TPM 2.0"
+
+#. • MSG_330
+msgid "Remove requirement for an online Microsoft account"
+msgstr "Verwijder de vereiste voor een online Microsoft-account"
+
+#. • MSG_331
+msgid "Disable data collection (Skip privacy questions)"
+msgstr "Gegevensverzameling uitschakelen (privacy-vragen overslaan)"
+
+#. • MSG_332
+msgid "Prevent Windows To Go from accessing internal disks"
+msgstr "Voorkomen dat Windows To Go toegang heeft tot interne schijven"
+
+#. • MSG_333
+msgid "Create a local account with username:"
+msgstr "Lokale account met gebruikersnaam aanmaken:"
+
+#. • MSG_334
+msgid "Set regional options to the same values as this user's"
+msgstr "Regionale opties op dezelfde waarden als deze gebruiker instellen"
+
+#. • MSG_335
+msgid "Disable BitLocker automatic device encryption"
+msgstr "Automatische Bitlocker-apparaatversleuteling uitschakelen"
+
+#. • MSG_336
+msgid "Persistent log"
+msgstr ""
+
+#. • MSG_337
+msgid ""
+"An additional file ('%s') must be downloaded from Microsoft to use this feature:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The file will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"Om deze functie te kunnen gebruiken, moet u een extra bestand (‘%s’) downloaden van Microsoft:\n"
+"- Selecteer ‘Ja’ om verbinding te maken met internet en het bestand te downloaden\n"
+"- Selecteer ‘Nee’ om de handeling te annuleren\n"
+"\n"
+"Opmerking: het bestand wordt gedownload naar de map van de toepassing en wordt automatisch opnieuw gebruikt als het daar al aanwezig is."
+
+#. • MSG_338
+msgid "Revoked UEFI bootloader detected"
+msgstr "Ingetrokken UEFI-bootloader gedetecteerd"
+
+#. • MSG_339
+msgid ""
+"Rufus detected that the ISO you have selected contains a UEFI bootloader that has been revoked and that will produce %s, when Secure Boot is enabled on a fully up to date UEFI system.\n"
+"\n"
+"- If you obtained this ISO image from a non reputable source, you should consider the possibility that it might contain UEFI malware and avoid booting from it.\n"
+"- If you obtained it from a trusted source, you should try to locate a more up to date version, that will not produce this warning."
+msgstr ""
+"Rufus heeft gedetecteerd dat de ISO die u hebt geselecteerd een UEFI-bootloader bevat die is ingetrokken en %s zal produceren wanneer Secure Boot is ingeschakeld op een volledig bijgewerkt UEFI-systeem.\n"
+"\n"
+"- Als u deze ISO-image hebt verkregen van een niet-vertrouwde bron, houdt u best rekening met de mogelijkheid dat het UEFI-malware bevat en vermijdt u om ervan op te starten.\n"
+"- Als u het van een betrouwbare bron hebt verkregen, moet u proberen een meer up-to-date versie te vinden die deze waarschuwing niet produceert."
+
+#. • MSG_340
+msgid "a \"Security Violation\" screen"
+msgstr "een \"Security Violation\"-scherm"
+
+#. • MSG_341
+msgid "a Windows Recovery Screen (BSOD) with '%s'"
+msgstr "een Windows-herstelscherm (BSOD) met '%s'"
+
+#. • MSG_342
+msgid "Compressed VHDX Image"
+msgstr "Gecomprimeerde VHDX-image"
+
+#. • MSG_343
+msgid "Uncompressed VHD Image"
+msgstr "Niet-gecomprimeerde VHD-image"
+
+#. • MSG_344
+msgid "Full Flash Update Image"
+msgstr "Full Flash Update image"
+
+#. • MSG_345
+msgid ""
+"Some additional data must be downloaded from Microsoft to use this functionality:\n"
+"- Select 'Yes' to connect to the Internet and download it\n"
+"- Select 'No' to cancel the operation"
+msgstr ""
+"Om deze functionaliteit te kunnen gebruiken, moeten enkele extra gegevens worden gedownload van Microsoft:\n"
+"- Selecteer 'Ja' om verbinding te maken met internet en ze te downloaden\n"
+"- Selecteer 'Nee' om de bewerking te annuleren"
+
+#. • MSG_346
+msgid "Restrict Windows to S-Mode (INCOMPATIBLE with online account bypass)"
+msgstr "Windows beperken tot S-Modus (NIET COMPATIBEL met omzeiling voor online account)"
+
+#. • MSG_347
+msgid "Expert Mode"
+msgstr "Expert-modus"
+
+#. • MSG_348
+msgid "Extracting archive files: %s"
+msgstr "Archiefbestanden uitpakken: %s"
+
+#. • MSG_349
+msgid "Use Rufus MBR"
+msgstr "Rufus MBR gebruiken"
+
+#. • MSG_350
+msgid "Use 'Windows CA 2023' signed bootloaders (Requires a compatible target PC)"
+msgstr "'Windows CA 2023' signed bootloaders gebruiken (alleen voor compatibele doel-pc's)"
+
+#. • MSG_351
+msgid "Checking for UEFI bootloader revocation..."
+msgstr "Controleren of de UEFI-bootloader is ingetrokken..."
+
+#. • MSG_352
+msgid "Checking for UEFI DBX updates..."
+msgstr "Controleren op updates voor UEFI DBX..."
+
+#. • MSG_353
+msgid "DBX update available"
+msgstr "Update voor DBX beschikbaar"
+
+#. • MSG_354
+msgid ""
+"Rufus has found an updated version of the DBX files used to perform UEFI Secure Boot revocation checks. Do you want to download this update?\n"
+"- Select 'Yes' to connect to the Internet and download this content\n"
+"- Select 'No' to cancel the operation\n"
+"\n"
+"Note: The files will be downloaded in the application's directory and will be reused automatically if present."
+msgstr ""
+"Rufus heeft een bijgewerkte versie gevonden van de DBX-bestanden die worden gebruikt voor het controleren van de intrekking van UEFI Secure Boot. Wilt u deze update downloaden?\n"
+"- Selecteer ‘Ja’ om verbinding te maken met internet en deze inhoud te downloaden\n"
+"- Selecteer ‘Nee’ om de bewerking te annuleren\n"
+"\n"
+"Opmerking: de bestanden worden gedownload naar de map van de toepassing en worden automatisch opnieuw gebruikt als ze daar al aanwezig zijn.\n"
+"\n"
+"Vertaald met DeepL.com (gratis versie)"
+
+#. • MSG_355
+msgid "⚠SILENTLY⚠ erase disk and install:"
+msgstr "⚠STIL⚠ schijf wissen en installeren:"
+
+#. • MSG_356
+msgid ""
+"You have selected to use the \"silent\" Windows installation option.\n"
+"\n"
+"This is an advanced option, reserved for people who want to create media that does not prompt the user during Windows installation and therefore UNCONDITIONALLY ERASES the first detected disk on the target system. If you are not careful, using this option can result in IRREVERSIBLE DATA LOSS!\n"
+"\n"
+"If this is not what you want, please select 'No' to go back and uncheck the option.\n"
+"Otherwise, if you select 'Yes, you agree that the whole responsibility for any data loss will be entirely with YOU."
+msgstr ""
+"U hebt ervoor gekozen om de “stille” Windows-installatieoptie te gebruiken.\n"
+"\n"
+"Dit is een geavanceerde optie, bedoeld voor gebruikers die installatiemedia willen maken waarbij de gebruiker tijdens de Windows-installatie niet om bevestiging wordt gevraagd en waarbij de eerste gedetecteerde schijf op het doelsysteem daarom ONVOORWAARDELIJK WORDT GEWIST. Als u niet voorzichtig bent, kan het gebruik van deze optie leiden tot ONOMKEERBAAR GEGEVENSVERLIES!\n"
+"\n"
+"Als dit niet is wat u wilt, selecteer dan ‘Nee’ om terug te gaan en vink de optie uit.\n"
+"Anders, als u ‘Ja’ selecteert, gaat u ermee akkoord dat de volledige verantwoordelijkheid voor eventueel gegevensverlies volledig bij uzelf ligt."
+
+#. • MSG_358
+msgid "Unsupported image location"
+msgstr "Locatie van image niet ondersteund"
+
+#. • MSG_359
+msgid ""
+"You cannot use an image that is located on the target drive, since that drive is going to be completely erased. It's the same thing as trying to saw the branch you are sitting on!\n"
+"\n"
+"Please move the image to a different location and try again."
+msgstr ""
+"U kunt geen image gebruiken die op de doelschijf staat, aangezien die schijf volledig zal worden gewist. Dat is hetzelfde als proberen de tak door te zagen waarop u zit!\n"
+"\n"
+"Verplaats de image naar een andere locatie en probeer het opnieuw."
+
+#. • MSG_360
+msgid "It is safe to leave this option enabled even if you have a TPM or more RAM, as this option only bypasses the setup requirements and does not actually prevent Windows from using all the hardware available."
+msgstr "U kunt deze optie gerust ingeschakeld laten, zelfs als u een TPM of meer RAM-geheugen hebt, aangezien deze optie alleen de installatievereisten omzeilt en niet daadwerkelijk verhindert dat Windows alle beschikbare hardware gebruikt."
+
+#. • MSG_361
+msgid "For this option to work, network/Internet MUST be disconnected during installation!"
+msgstr "Om deze optie te laten werken, MOET de netwerk-/internetverbinding tijdens de installatie uitgeschakeld zijn!"
+
+#. • MSG_362
+msgid "Automatically answer 'no' to the Windows setup questions relating to the sharing of data with Microsoft, instead of prompting the user."
+msgstr "Beantwoord de vragen in de Windows-installatieprocedure over het delen van gegevens met Microsoft automatisch met ‘nee’, in plaats van de gebruiker hierom te vragen."
+
+#. • MSG_363
+msgid "You should leave this option enabled, unless you are okay with 'Windows To Go' accessing internal disks and silently performing irreversible file system upgrades."
+msgstr "Laat deze optie ingeschakeld, tenzij u ermee akkoord gaat dat ‘Windows To Go’ toegang krijgt tot interne schijven en in de achtergrond onomkeerbare upgrades van het bestandssysteem uitvoert."
+
+#. • MSG_364
+msgid "Automatically create a local account with the specified user name, using an empty password that will need to be changed on next logon."
+msgstr "Maak automatisch een lokaal account aan met de opgegeven gebruikersnaam en een leeg wachtwoord, dat bij de volgende aanmelding moet worden gewijzigd."
+
+#. • MSG_365
+msgid "Duplicate the regional settings from this PC (keyboard, timezone, currency), instead of prompting the user."
+msgstr "Kopieer de regionale instellingen van deze pc (toetsenbord, tijdzone, valuta), in plaats van de gebruiker hierom te vragen."
+
+#. • MSG_366
+msgid "Don't encrypt the system disk, unless explicitly requested by the user."
+msgstr "De systeemschijf niet versleutelen, tenzij de gebruiker hier uitdrukkelijk om vraagt."
+
+#. • MSG_367
+msgid "Use this option only if you know what S-Mode is and understand that your system may be locked into S-Mode even after you completely erase and reinstall Windows."
+msgstr "Gebruik deze optie alleen als u weet wat S-Mode is en u zich ervan bewust bent dat uw systeem mogelijk in S-Mode blijft staan, zelfs nadat u Windows volledig hebt gewist en opnieuw hebt geïnstalleerd."
+
+#. • MSG_368
+msgid "Use this option if the system you plan to install Windows on is using fully up-to-date Secure Boot certificates. If needed, you can look into using 'Mosby' to update your system."
+msgstr "Gebruik deze optie als het systeem waarop u Windows wilt installeren, volledig bijgewerkte Secure Boot-certificaten gebruikt. Indien nodig kunt u overwegen om ‘Mosby’ te gebruiken om uw systeem bij te werken."
+
+#. • MSG_369
+msgid "Use this option if you want to revoke additional potentially unsafe Windows bootloaders, but with the potential of also preventing standard Windows media from booting."
+msgstr "Gebruik deze optie als u extra, mogelijk onveilige Windows-bootloaders wilt uitschakelen, maar houd er rekening mee dat hierdoor mogelijk ook standaard Windows-media niet meer kunnen opstarten."
+
+#. • MSG_370
+msgid "\"Quality of Life\" enhancements: Disable most of the unwanted features Microsoft is trying to force onto end users."
+msgstr "Verbeteringen op het gebied van levenskwaliteit: schakel de meeste ongewenste functies uit die Microsoft eindgebruikers probeert op te dringen."
+
+#. • MSG_371
+msgid "If you use this option, please make sure to disconnect every disk from the target PC, except the one you want to install Windows on, as well as not leave the media plugged into any PC you don't want to erase."
+msgstr "Als u deze optie gebruikt, zorg er dan voor dat u alle schijven van de doelcomputer loskoppelt, behalve de schijf waarop u Windows wilt installeren, en laat het installatiemedium niet aangesloten op een computer die u niet wilt wissen."
+
+#. • MSG_900
+#.
+#. The following messages are for the Windows Store listing only and are not used by the application
+msgid "Rufus is a utility that helps format and create bootable USB flash drives, such as USB keys/pendrives, memory sticks, etc."
+msgstr "Rufus is een programma dat helpt bij het formatteren en aanmaken van opstartbare USB-flash-drives, zoals USB-sticks, geheugensticks, enz."
+
+#. • MSG_901
+msgid "Official site: %s"
+msgstr "Officiële site: %s"
+
+#. • MSG_902
+msgid "Source Code: %s"
+msgstr "Broncode: %s"
+
+#. • MSG_903
+msgid "ChangeLog: %s"
+msgstr "Wijzigingslog: %s"
+
+#. • MSG_904
+#.
+#. The gnu.org website has many translations of the GPL (such as https://www.gnu.org/licenses/gpl-3.0.zh-cn.html, https://www.gnu.org/licenses/gpl-3.0.fr.html)
+#. Please make sure you try to locate the relevant https://www.gnu.org/licenses/gpl-3.0.<LANG-ID>.html for your language and use it here.
+msgid ""
+"This application is licensed under the terms of the GNU Public License (GPL) version 3.\n"
+"See https://www.gnu.org/licenses/gpl-3.0.en.html for details."
+msgstr ""
+"Deze toepassing valt onder de voorwaarden van de GNU Public License (GPL) versie 3.\n"
+"Zie https://www.gnu.org/licenses/gpl-3.0.nl.html voor details."
+
+#. • MSG_905
+#.
+#. Keyword for "boot" will be used for search in the Windows Store
+msgid "Boot"
+msgstr "Opstarten"
+
+#. • MSG_910
+#.
+#. This and subsequent messages will be listed in the 'Features' section of the Windows Store page
+msgid "Format USB, flash card and virtual drives to FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+msgstr "USB, flashkaart en virtuele schijven formatteren naar FAT/FAT32/NTFS/UDF/exFAT/ReFS/ext2/ext3"
+
+#. • MSG_911
+msgid "Create FreeDOS bootable USB drives"
+msgstr "FreeDOS opstartbare USB-schijven aanmaken"
+
+#. • MSG_912
+msgid "Create bootable drives from bootable ISOs (Windows, Linux, etc.)"
+msgstr "Opstartbare schijven aanmaken via opstartbare ISO's (Windows, Linux, enz)"
+
+#. • MSG_913
+msgid "Create bootable drives from bootable disk images, including compressed ones"
+msgstr "Opstartbare schijven aanmaken van opstartbare schijf-images, inclusief gecomprimeerde images"
+
+#. • MSG_914
+msgid "Create BIOS or UEFI bootable drives, including UEFI bootable NTFS"
+msgstr "BIOS of UEFI opstartbare schijven aanmaken, inclusief UEFI opstartbare NTFS"
+
+#. • MSG_915
+msgid "Create 'Windows To Go' drives"
+msgstr "'Windows To Go'-schijven aanmaken"
+
+#. • MSG_916
+msgid "Create Windows 11 installation drives for PCs that don't have TPM or Secure Boot"
+msgstr "Windows 11 installatieschijven aanmaken voor pc's die geen TPM of Secure Boot hebben"
+
+#. • MSG_917
+msgid "Create persistent Linux partitions"
+msgstr "Persistent Linux partities aanmaken"
+
+#. • MSG_918
+msgid "Create VHD/DD images of the selected drive"
+msgstr "VHD/DD-images van de geselecteerde schijf aanmaken"
+
+#. • MSG_919
+msgid "Compute MD5, SHA-1, SHA-256 and SHA-512 checksums of the selected image"
+msgstr "MD5, SHA-1, SHA-256 en SHA-512 controlesommen berekenen van de geselecteerde image"
+
+#. • MSG_920
+msgid "Perform bad blocks checks, including detection of \"fake\" flash drives"
+msgstr "Controles uitvoeren op slechte blokken, inclusief detectie van \"valse\" flashdrives"
+
+#. • MSG_921
+msgid "Download official Microsoft Windows retail ISOs"
+msgstr "Officiële Microsoft Windows retail ISO's downloaden"
+
+#. • MSG_922
+msgid "Download UEFI Shell ISOs"
+msgstr "UEFI Shell ISO's downloaden"

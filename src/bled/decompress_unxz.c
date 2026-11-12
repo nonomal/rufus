@@ -11,9 +11,6 @@
 #include "bb_archive.h"
 
 #define XZ_EXTERN static
-// We get XZ_OPTIONS_ERROR in xz_dec_stream if this is not defined
-#define XZ_DEC_ANY_CHECK
-
 #define XZ_BUFSIZE BB_BUFSIZE
 
 #include "xz_dec_bcj.c"
@@ -52,7 +49,7 @@ IF_DESKTOP(long long) int FAST_FUNC unpack_xz_stream(transformer_state_t *xstate
 		bb_error_msg_and_err("memory allocation error");
 
 	in = xmalloc(XZ_BUFSIZE);
-	out = xmalloc(XZ_BUFSIZE);
+	out = aligned_xmalloc(XZ_BUFSIZE);
 
 	b.in = in;
 	b.in_pos = 0;
@@ -89,7 +86,7 @@ IF_DESKTOP(long long) int FAST_FUNC unpack_xz_stream(transformer_state_t *xstate
 
 #ifdef XZ_DEC_ANY_CHECK
 		if (ret == XZ_UNSUPPORTED_CHECK) {
-			bb_error_msg("unsupported check; not verifying file integrity");
+//			bb_error_msg("unsupported check; not verifying file integrity");
 			continue;
 		}
 #endif
@@ -132,7 +129,7 @@ out:
 err:
 	xz_dec_end(s);
 	free(in);
-	free(out);
+	aligned_free(out);
 	if (ret == XZ_OK)
 		return n;
 	else if (ret == XZ_BUF_FULL)

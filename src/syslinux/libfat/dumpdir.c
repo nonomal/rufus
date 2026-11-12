@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------- *
  *
- *   Copyright 2019 Pete Batard <pete@akeo.ie>
+ *   Copyright 2019-2024 Pete Batard <pete@akeo.ie>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #include <string.h>
 #include "libfatint.h"
+
+#ifndef ARRAYSIZE
+#define ARRAYSIZE(a) (sizeof(a) / sizeof(*(a)))
+#endif
 
 static struct fat_dirent* get_next_dirent(struct libfat_filesystem *fs,
 					  libfat_sector_t *sector, int *offset)
@@ -41,12 +45,12 @@ static struct fat_dirent* get_next_dirent(struct libfat_filesystem *fs,
 static void fill_utf16(wchar_t *name, unsigned char *entry)
 {
     int i;
-    for (i=0; i<5; i++)
-	name[i] = read16((le16_t*)&entry[1 + 2*i]);
-    for (i=5; i<11; i++)
-	name[i] = read16((le16_t*)&entry[4 + 2*i]);
-    for (i=11; i<12; i++)
-	name[i] = read16((le16_t*)&entry[6 + 2*i]);
+    for (i = 0; i < 5; i++)
+	name[i] = read16((le16_t*)&entry[1 + 2 * i]);
+    for (i = 5; i < 11; i++)
+	name[i] = read16((le16_t*)&entry[4 + 2 * i]);
+    for (i = 11; i < 13; i++)
+	name[i] = read16((le16_t*)&entry[6 + 2 * i]);
 }
 
 int libfat_dumpdir(struct libfat_filesystem *fs, libfat_dirpos_t *dp,
@@ -94,14 +98,18 @@ int libfat_dumpdir(struct libfat_filesystem *fs, libfat_dirpos_t *dp,
 	if ((j >= 0) && (i != j - 1))
 	    return -3;
 	j = i;
+	/* Validate that a maliciously crafted sequence number can't overflow our buffer */
+	if ((i < 0) || (13 * (i + 1) > (int)ARRAYSIZE(di->name)))
+	    return -3;  /* Invalid sequence number */
 	fill_utf16(&di->name[13 * i], dep->name);
 	dep = get_next_dirent(fs, &dp->sector, &dp->offset);
 	if (!dep)
 	    return -1;
     }
+    di->name[ARRAYSIZE(di->name) - 1] = 0;
 
     if (di->name[0] == 0) {
-	for (i = 0, j = 0; i < 12; i++) {
+	for (i = 0, j = 0; i < 11; i++) {
 	    if ((i >= 8) && (dep->name[i] == ' '))
 		break;
 	    if (i == 8)

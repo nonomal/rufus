@@ -1,7 +1,7 @@
 /*
  * Rufus: The Reliable USB Formatting Utility
  * Elementary Unicode compliant find/replace parser
- * Copyright © 2012-2020 Pete Batard <pete@akeo.ie>
+ * Copyright © 2012-2025 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #endif
 
 #include <windows.h>
+#include <wincrypt.h>
+#include <wintrust.h>
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
@@ -53,7 +55,7 @@ static loc_cmd* get_loc_cmd(char c, char* line) {
 	char *endptr, *expected_endptr, *token;
 	loc_cmd* lcmd = NULL;
 
-	for (j=0; j<ARRAYSIZE(parse_cmd); j++) {
+	for (j = 0; j<ARRAYSIZE(parse_cmd); j++) {
 		if (c == parse_cmd[j].c)
 			break;
 	}
@@ -91,7 +93,7 @@ static loc_cmd* get_loc_cmd(char c, char* line) {
 			// locate ending quote
 			while ((line[i] != 0) && ((line[i] != '"') || ((line[i] == '"') && (line[i-1] == '\\')))) {
 				if ((line[i] == '"') && (line[i-1] == '\\')) {
-					strcpy(&line[i-1], &line[i]);
+					memmove(&line[i-1], &line[i], strlen(&line[i]) + 1);
 				} else {
 					i++;
 				}
@@ -131,10 +133,11 @@ static loc_cmd* get_loc_cmd(char c, char* line) {
 		case 'u':	// comma or dot separated list of unsigned integers (to end of line)
 			// count the number of commas
 			lcmd->unum_size = 1;
-			for (l=i; line[l] != 0; l++) {
+			for (l = i; line[l] != 0; l++) {
 				if ((line[l] == '.') || (line[l] == ','))
 					lcmd->unum_size++;
 			}
+			free(lcmd->unum);
 			lcmd->unum = (uint32_t*)malloc(lcmd->unum_size * sizeof(uint32_t));
 			if (lcmd->unum == NULL) {
 				luprint("could not allocate memory");
@@ -796,13 +799,18 @@ char* set_token_data_file(const char* token, const char* data, const char* filen
 	}
 
 out:
-	if (fd_in != NULL) fclose(fd_in);
-	if (fd_out != NULL) fclose(fd_out);
+	if (fd_in != NULL) {
+		fclose(fd_in);
+		fd_in = NULL;
+	}
+	if (fd_out != NULL)
+		fclose(fd_out);
 
 	// If an insertion occurred, delete existing file and use the new one
 	if (ret != NULL) {
 		// We're in Windows text mode => Remove CRs if requested
-		fd_in = _wfopen(wtmpname, L"rb");
+		if (wtmpname != NULL)
+			fd_in = _wfopen(wtmpname, L"rb");
 		fd_out = _wfopen(wfilename, L"wb");
 		// Don't check fds
 		if ((fd_in != NULL) && (fd_out != NULL)) {
@@ -814,8 +822,10 @@ out:
 		} else {
 			uprintf("Could not write '%s' - original file has been left unmodified\n", filename);
 			ret = NULL;
-			if (fd_in != NULL) fclose(fd_in);
-			if (fd_out != NULL) fclose(fd_out);
+			if (fd_in != NULL)
+				fclose(fd_in);
+			if (fd_out != NULL)
+				fclose(fd_out);
 		}
 	}
 	if (wtmpname != NULL)
@@ -884,7 +894,7 @@ static __inline char* get_sanitized_token_data_buffer(const char* token, unsigne
 	size_t i;
 	char* data = get_token_data_buffer(token, n, buffer, buffer_size);
 	if (data != NULL) {
-		for (i=0; i<strlen(data); i++) {
+		for (i = 0; i < strlen(data); i++) {
 			if ((data[i] == '\\') && (data[i+1] == 'n')) {
 				data[i] = '\r';
 				data[i+1] = '\n';
@@ -907,14 +917,13 @@ void parse_update(char* buf, size_t len)
 	char allowed_rtf_chars[] = "abcdefghijklmnopqrstuvwxyz|~-_:*'";
 	char allowed_std_chars[] = "\r\n ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"$%^&+=<>(){}[].,;#@/?";
 	char download_url_name[24];
-	char *arch_names[CPU_ARCH_MAX] = { "x86", "x64", "arm", "arm64", "none" };
 
 	// strchr includes the NUL terminator in the search, so take care of backslash before NUL
 	if ((buf == NULL) || (len < 2) || (len > 64 * KB) || (buf[len-1] != 0) || (buf[len-2] == '\\'))
 		return;
 	// Sanitize the data - Not a silver bullet, but it helps
 	len = safe_strlen(buf)+1;	// Someone may be inserting NULs
-	for (i=0; i<len-1; i++) {
+	for (i = 0; i < len - 1; i++) {
 		// Check for valid RTF sequences as well as allowed chars if not RTF
 		if (buf[i] == '\\') {
 			// NB: we have a zero terminator, so we can afford a +1 without overflow
@@ -926,25 +935,26 @@ void parse_update(char* buf, size_t len)
 		}
 	}
 
-	for (i=0; i<3; i++)
+	for (i = 0; i < 3; i++)
 		update.version[i] = 0;
 	update.platform_min[0] = 5;
 	update.platform_min[1] = 2;	// XP or later
 	safe_free(update.download_url);
 	safe_free(update.release_notes);
 	if ((data = get_sanitized_token_data_buffer("version", 1, buf, len)) != NULL) {
-		for (i=0; (i<3) && ((token = strtok((i==0)?data:NULL, ".")) != NULL); i++) {
+		for (i = 0; (i < 3) && ((token = strtok((i == 0) ? data : NULL, ".")) != NULL); i++) {
 			update.version[i] = (uint16_t)atoi(token);
 		}
 		safe_free(data);
 	}
 	if ((data = get_sanitized_token_data_buffer("platform_min", 1, buf, len)) != NULL) {
-		for (i=0; (i<2) && ((token = strtok((i==0)?data:NULL, ".")) != NULL); i++) {
+		for (i = 0; (i < 2) && ((token = strtok((i == 0) ? data : NULL, ".")) != NULL); i++) {
 			update.platform_min[i] = (uint32_t)atoi(token);
 		}
 		safe_free(data);
 	}
-	static_sprintf(download_url_name, "download_url_%s", arch_names[GetCpuArch()]);
+	static_sprintf(download_url_name, "download_url_%s", GetArchName(WindowsVersion.Arch));
+	safe_strtolower(download_url_name);
 	update.download_url = get_sanitized_token_data_buffer(download_url_name, 1, buf, len);
 	if (update.download_url == NULL)
 		update.download_url = get_sanitized_token_data_buffer("download_url", 1, buf, len);
@@ -1052,7 +1062,7 @@ out:
 	if (fd_out != NULL) fclose(fd_out);
 
 	// If an insertion occurred, delete existing file and use the new one
-	if (ret != NULL) {
+	if (ret != NULL && wtmpname != NULL && wfilename != NULL) {
 		// We're in Windows text mode => Remove CRs if requested
 		fd_in = _wfopen(wtmpname, L"rb");
 		fd_out = _wfopen(wfilename, L"wb");
@@ -1187,8 +1197,10 @@ char* replace_in_token_data(const char* filename, const char* token, const char*
 
 		// Skip whitespaces after token (while making sure there's at least one)
 		ns = wcsspn(&buf[i], wspace);
-		if (ns == 0)
+		if (ns == 0) {
+			fputws(buf, fd_out);
 			continue;
+		}
 		i += ns;
 
 		// p[x] = starting position of the fragment with the replaceable string
@@ -1215,7 +1227,7 @@ char* replace_in_token_data(const char* filename, const char* token, const char*
 			// coverity[invalid_type]
 			fwprintf_s(fd_out, L"%s%s", &buf[p[j]], wrep);
 
-		// Ouput the last fragment
+		// Output the last fragment
 		// coverity[invalid_type]
 		fwprintf_s(fd_out, L"%s", &buf[p[j]]);
 
@@ -1227,7 +1239,7 @@ out:
 	if (fd_out != NULL) fclose(fd_out);
 
 	// If a replacement occurred, delete existing file and use the new one
-	if (ret != NULL) {
+	if (ret != NULL && wtmpname != NULL && wfilename != NULL) {
 		// We're in Windows text mode => Remove CRs if requested
 		fd_in = _wfopen(wtmpname, L"rb");
 		fd_out = _wfopen(wfilename, L"wb");
@@ -1259,7 +1271,7 @@ out:
 }
 
 /*
- * Replace all 'c' characters in string 'src' with the substring 'rep'
+ * Replace all 'c' characters in string 'src' with the substring 'rep'.
  * The returned string is allocated and must be freed by the caller.
  */
 char* replace_char(const char* src, const char c, const char* rep)
@@ -1289,6 +1301,66 @@ char* replace_char(const char* src, const char c, const char* rep)
 		}
 	}
 	res[j] = 0;
+	return res;
+}
+
+/*
+ * Replace all characters from string 'str' that are present in the array of chars 'rem'
+ * to the 'rep' character.
+ */
+void filter_chars(char* str, const char* rem, const char rep)
+{
+	char *p, *q;
+
+	if (str == NULL || rem == NULL)
+		return;
+	for (p = str; *p != '\0'; p++) {
+		for (q = (char*)rem; *q != '\0'; q++)
+			if (*p == *q)
+				*p = rep;
+	}
+}
+
+/*
+ * Trim all leadings and trailing whitespaces
+ */
+void trim(char* str)
+{
+	size_t l;
+	char* p;
+
+	if (str == NULL)
+		return;
+	l = strlen(str);
+	if (l < 1)
+		return;
+	while (isspace(str[l - 1]))
+		str[--l] = '\0';
+	for (p = str; *p != '\0' && isspace(*p); p++, l--);
+	memmove(str, p, l + 1);
+}
+
+/*
+ * Remove all instances of substring 'sub' form string 'src.
+ * The returned string is allocated and must be freed by the caller.
+ */
+char* remove_substr(const char* src, const char* sub)
+{
+	size_t i, j, str_len = safe_strlen(src), sub_len = safe_strlen(sub);
+	char* res;
+
+	if ((src == NULL) || (sub == NULL) || (sub_len > str_len))
+		return NULL;
+
+	res = (char*)calloc(str_len + 1, 1);
+	if (res == NULL)
+		return NULL;
+	for (i = 0, j = 0; i <= str_len; ) {
+		if (i <= str_len - sub_len && memcmp(&src[i], sub, sub_len) == 0)
+			i += sub_len;
+		else
+			res[j++] = src[i++];
+	}
 	return res;
 }
 
@@ -1333,7 +1405,7 @@ static BOOL get_data_from_asn1_internal(const uint8_t* buf, size_t buf_len, cons
 			}
 
 			if (len > buf_len - pos) {
-				uprintf("get_data_from_asn1: Overflow error (computed length %d is larger than remaining data)", len);
+				uprintf("get_data_from_asn1: Overflow error (computed length %zu is larger than remaining data)", len);
 				return FALSE;
 			}
 		}
@@ -1471,4 +1543,369 @@ void* get_data_from_asn1(const uint8_t* buf, size_t buf_len, const char* oid_str
 	get_data_from_asn1_internal(buf, buf_len, oid, oid_len, asn1_type, &data, data_len, &matched);
 	free(oid);
 	return data;
+}
+
+/*
+ * Sanitize an ISO volume label or GRUB version, so that we can use it for bootloader lookup.
+ * Note that this call modifies the string passed as parameter.
+ */
+int sanitize_label(char* label)
+{
+	// Notice: Do not add "-beta" to this list as we have existing GRUB lookups for
+	// "grub-2.02-beta2" and stuff...
+	static const char* remove[] = { "-i386", "-i686", "-amd64", "-x86-64", ".x86-64",
+		"-x64", "-armhf", "-arm64", "-aarch64", "-32-bit", "-64-bit", "-32bit", "-64bit",
+		"-intel", "-cd", "-dvd", "-standard", "-live", "-install", "-server", "-net",
+		"-desktop", "-lts", "-studio", "-baseos", "-kde", "-xfce", "-lxde", "-gnome",
+		"-mate", "-unstable", "-debug", "-release", "-final", "-stream", "-cinnamon",
+		"-cinn", "-leap", "-tumbleweed", "-budgie", "-ws", "-iot", "-ostree", ".iso"
+	};
+	size_t i, len;
+	char *s;
+
+	len = strlen(label);
+	for (i = 0; i < len; i++) {
+		char c = label[i];
+		// Convert to lowercase
+		if (c >= 'A' && c <= 'Z')
+			c += 0x20;
+		// Convert non alphanum (except '.') to dash
+		if ((c < '0' && c != '.') || (c > '9' && c < 'a') || (c > 'z'))
+			c = '-';
+		label[i] = c;
+	}
+
+	// Remove all leading '-'
+	for (i = 0; i < len && label[i] == '-'; i++);
+	if (i != 0)
+		memmove(label, &label[i], len - i + 1);
+	len = strlen(label);
+	if (len <= 1)
+		return -1;
+
+	// Remove all trailing '-'
+	for (i = len - 1; i > 0 && label[i] == '-'; i--)
+		label[i] = 0;
+	len = strlen(label);
+	if (len <= 1)
+		return -1;
+
+	// Remove all duplicate '-' (non-optimized!)
+	for (i = 0; len >= 2 && i < len - 2; i++) {
+		if (label[i] == '-' && label[i + 1] == '-') {
+			memmove(&label[i + 1], &label[i + 2], len - i - 1);
+			len--;
+			i--;
+		}
+	}
+
+	// Remove specific substrings
+	for (i = 0; i < ARRAYSIZE(remove); i++) {
+		s = strstr(label, remove[i]);
+		if (s != NULL)
+			memmove(s, &s[strlen(remove[i])], strlen(&s[strlen(remove[i])]) + 1);
+	}
+
+	return 0;
+}
+
+/*
+ * Parse an sbat_level.txt file and returns an array of (product_name, min_version) tuples.
+ * Array must be freed by caller.
+ */
+sbat_entry_t* GetSbatEntries(char* sbatlevel)
+{
+	BOOL eol, eof;
+	char* version_str;
+	uint32_t i, num_entries;
+	sbat_entry_t* sbat_list;
+
+	if (sbatlevel == NULL)
+		return NULL;
+
+	num_entries = 1;
+	for (i = 0; sbatlevel[i] != '\0'; i++) {
+		if (sbatlevel[i] == '\r')
+			sbatlevel[i] = '\n';
+		// Convert CR before counting, so that CR-only line endings are counted too
+		if (sbatlevel[i] == '\n')
+			num_entries++;
+	}
+
+	sbat_list = calloc(num_entries + 1, sizeof(sbat_entry_t));
+	if (sbat_list == NULL)
+		return NULL;
+
+	num_entries = 0;
+	for (i = 0; sbatlevel[i] != '\0'; ) {
+		// Eliminate blank lines
+		if (sbatlevel[i] == '\n') {
+			i++;
+			continue;
+		}
+		// Eliminate comments
+		if (sbatlevel[i] == '#') {
+			while (sbatlevel[i] != '\n' && sbatlevel[i] != '\0')
+				i++;
+			continue;
+		}
+		sbat_list[num_entries].product = &sbatlevel[i];
+		for (; sbatlevel[i] != ',' && sbatlevel[i] != '\0' && sbatlevel[i] != '\n'; i++);
+		if (sbatlevel[i] == '\0' || sbatlevel[i] == '\n')
+			break;
+		sbatlevel[i++] = '\0';
+		version_str = &sbatlevel[i];
+		for (; sbatlevel[i] != ',' && sbatlevel[i] != '\0' && sbatlevel[i] != '\n'; i++);
+		eol = (sbatlevel[i] == '\0' || sbatlevel[i] == '\n');
+		eof = (sbatlevel[i] == '\0');
+		sbatlevel[i] = '\0';
+		if (!eof)
+			i++;
+		// Allow the provision of an hex version
+		if (version_str[0] == '0' && version_str[1] == 'x')
+			sbat_list[num_entries].version = strtoul(version_str, NULL, 16);
+		else
+			sbat_list[num_entries].version = strtoul(version_str, NULL, 10);
+		if (!eol)
+			for (; sbatlevel[i] != '\0' && sbatlevel[i] != '\n'; i++);
+		if (sbat_list[num_entries].version != 0)
+			num_entries++;
+	}
+	if (num_entries == 0) {
+		free(sbat_list);
+		return NULL;
+	}
+
+	return sbat_list;
+}
+
+/*
+ * Parse a list of SHA-1 certificate hexascii thumbprints.
+ * List must be freed by the caller.
+ */
+thumbprint_list_t* GetThumbprintEntries(char* thumbprints_txt)
+{
+	uint32_t i, j, num_entries;
+	thumbprint_list_t* thumbprints;
+
+	if (thumbprints_txt == NULL)
+		return NULL;
+
+	num_entries = 1;
+	for (i = 0; thumbprints_txt[i] != '\0'; i++)
+		if (thumbprints_txt[i] == '\n')
+			num_entries++;
+
+	thumbprints = calloc(sizeof(thumbprint_list_t) + num_entries * SHA1_HASHSIZE, 1);
+	if (thumbprints == NULL)
+		return NULL;
+	thumbprints->count = 0;
+
+	for (i = 0; thumbprints_txt[i] != '\0'; ) {
+		// Eliminate blank lines
+		if (thumbprints_txt[i] == '\n') {
+			i++;
+			continue;
+		}
+		// Eliminate lines that don't start by an hexadecimal digit
+		if (!IS_HEXASCII(thumbprints_txt[i])) {
+			while (thumbprints_txt[i] != '\n' && thumbprints_txt[i] != '\0')
+				i++;
+			continue;
+		}
+		for (j = 0; thumbprints_txt[i] != '\n' && thumbprints_txt[i] != '\0'; i++, j++) {
+			if (!IS_HEXASCII(thumbprints_txt[i]))
+				break;
+			if ((j / 2) >= SHA1_HASHSIZE)
+				break;
+			thumbprints->list[thumbprints->count][j / 2] = thumbprints->list[thumbprints->count][j / 2] << 4;
+			thumbprints->list[thumbprints->count][j / 2] |= FROM_HEXASCII(thumbprints_txt[i]);
+			if (j == 2 * SHA1_HASHSIZE - 1)
+				thumbprints->count++;
+		}
+		while (thumbprints_txt[i] != '\n' && thumbprints_txt[i] != '\0')
+			i++;
+	}
+
+	if (thumbprints->count == 0) {
+		free(thumbprints);
+		return NULL;
+	}
+
+	return thumbprints;
+}
+
+/*
+ * PE parsing functions
+ */
+
+// Validate the DOS and NT headers, as well as the section table, of a PE buffer against
+// the buffer length. Return the NT header (and optionally the section table along with
+// the number of sections) or NULL if the headers are invalid or don't fit in the buffer.
+static IMAGE_NT_HEADERS32* GetPeHeader(uint8_t* buf, uint32_t buf_len,
+	IMAGE_SECTION_HEADER** section_header, uint32_t* nb_sections)
+{
+	IMAGE_DOS_HEADER* dos_header = (IMAGE_DOS_HEADER*)buf;
+	IMAGE_NT_HEADERS32* pe_header;
+	uint32_t header_size;
+
+	// We should have filtered out overly large executables already.
+	// If that is not the case, make sure we do get user reports about it.
+	if_assert_fails(buf_len < MAX_PE_SIZE)
+		return NULL;
+
+	if (buf == NULL || buf_len < sizeof(IMAGE_DOS_HEADER) || dos_header->e_magic != IMAGE_DOS_SIGNATURE)
+		return NULL;
+	if (dos_header->e_lfanew < 0 || dos_header->e_lfanew >= MAX_PE_SIZE || dos_header->e_lfanew + sizeof(IMAGE_NT_HEADERS32) > buf_len)
+		return NULL;
+
+	pe_header = (IMAGE_NT_HEADERS32*)&buf[dos_header->e_lfanew];
+	if (pe_header->Signature != IMAGE_NT_SIGNATURE)
+		return NULL;
+	if (pe_header->FileHeader.Machine == IMAGE_FILE_MACHINE_I386 || pe_header->FileHeader.Machine == IMAGE_FILE_MACHINE_ARM)
+		header_size = sizeof(IMAGE_NT_HEADERS32);
+	else
+		header_size = sizeof(IMAGE_NT_HEADERS64);
+	// The section table immediately follows the NT headers
+	// Our MAX_PE_SIZE check is also designed to prevent 32-bit arithmetic overflows
+	if (dos_header->e_lfanew + header_size +
+		pe_header->FileHeader.NumberOfSections * sizeof(IMAGE_SECTION_HEADER) > buf_len)
+		return NULL;
+
+	if (section_header != NULL)
+		*section_header = (IMAGE_SECTION_HEADER*)&buf[dos_header->e_lfanew + header_size];
+	if (nb_sections != NULL)
+		*nb_sections = pe_header->FileHeader.NumberOfSections;
+	return pe_header;
+}
+
+// Return the arch of a PE executable buffer
+uint16_t GetPeArch(uint8_t* buf, uint32_t buf_len)
+{
+	IMAGE_NT_HEADERS32* pe_header = GetPeHeader(buf, buf_len, NULL, NULL);
+
+	if (pe_header == NULL)
+		return IMAGE_FILE_MACHINE_UNKNOWN;
+	return pe_header->FileHeader.Machine;
+}
+
+// Return the address and (optionally) the length of a PE section from a PE buffer
+uint8_t* GetPeSection(uint8_t* buf, uint32_t buf_len, const char* name, uint32_t* len)
+{
+	char section_name[IMAGE_SIZEOF_SHORT_NAME] = { 0 };
+	uint32_t i, nb_sections;
+	IMAGE_SECTION_HEADER* section_header;
+
+	if (name == NULL || GetPeHeader(buf, buf_len, &section_header, &nb_sections) == NULL)
+		return NULL;
+
+	static_strcpy(section_name, name);
+
+	for (i = 0; i < nb_sections; i++) {
+		if (memcmp(section_header[i].Name, section_name, sizeof(section_name)) == 0) {
+			if ((uint64_t)section_header[i].PointerToRawData + section_header[i].SizeOfRawData > buf_len)
+				return NULL;
+			if (len != NULL)
+				*len = section_header[i].SizeOfRawData;
+			return &buf[section_header[i].PointerToRawData];
+		}
+	}
+	return NULL;
+}
+
+// Convert an RVA address to a physical address from a PE buffer
+uint8_t* RvaToPhysical(uint8_t* buf, uint32_t buf_len, uint32_t rva)
+{
+	uint32_t i, nb_sections;
+	uint64_t offset;
+	IMAGE_SECTION_HEADER* section_header;
+
+	if (GetPeHeader(buf, buf_len, &section_header, &nb_sections) == NULL)
+		return NULL;
+
+	for (i = 0; i < nb_sections; i++) {
+		offset = section_header[i].VirtualAddress;
+		if (offset <= (uint64_t)rva && (uint64_t)rva < (offset + section_header[i].Misc.VirtualSize))
+			break;
+	}
+	if (i >= nb_sections)
+		return NULL;
+
+	offset = section_header[i].PointerToRawData;
+	offset += rva - section_header[i].VirtualAddress;
+	if (offset >= buf_len - sizeof(uint32_t))
+		return NULL;
+	return &buf[offset];
+}
+
+// Using the MS APIs to poke the resources of the EFI bootloaders is simply TOO. DAMN. SLOW.
+// So, to QUICKLY access the resources we need, we reivent Microsoft's sub-optimal resource parser.
+static BOOL FoundResourceRva = FALSE;
+uint32_t FindResourceRva(const wchar_t* name, uint8_t* root, uint8_t* dir, uint32_t* len)
+{
+	uint32_t i, rva;
+	IMAGE_RESOURCE_DIRECTORY* _dir = (IMAGE_RESOURCE_DIRECTORY*)dir;
+	IMAGE_RESOURCE_DIRECTORY_ENTRY* dir_entry = (IMAGE_RESOURCE_DIRECTORY_ENTRY*)&_dir[1];
+	IMAGE_RESOURCE_DIR_STRING_U* dir_string;
+	IMAGE_RESOURCE_DATA_ENTRY* data_entry;
+
+	if (root == NULL || dir == NULL || name == NULL)
+		return 0;
+
+	// Initial invocation should always start at the root
+	if (root == dir)
+		FoundResourceRva = FALSE;
+
+	for (i = 0; i < (uint32_t)_dir->NumberOfNamedEntries + _dir->NumberOfIdEntries; i++) {
+		if (!FoundResourceRva && i < _dir->NumberOfNamedEntries) {
+			dir_string = (IMAGE_RESOURCE_DIR_STRING_U*)(root + dir_entry[i].NameOffset);
+			if (dir_string->Length != wcslen(name) ||
+				memcmp(name, dir_string->NameString, wcslen(name)) != 0)
+				continue;
+			FoundResourceRva = TRUE;
+		}
+		if (dir_entry[i].OffsetToData & IMAGE_RESOURCE_DATA_IS_DIRECTORY) {
+			rva = FindResourceRva(name, root, &root[dir_entry[i].OffsetToDirectory], len);
+			if (rva != 0)
+				return rva;
+		} else if (FoundResourceRva) {
+			data_entry = (IMAGE_RESOURCE_DATA_ENTRY*)(root + dir_entry[i].OffsetToData);
+			if (len != NULL)
+				*len = data_entry->Size;
+			return data_entry->OffsetToData;
+		}
+	}
+	return 0;
+}
+
+uint8_t* GetPeSignatureData(uint8_t* buf, uint32_t buf_len)
+{
+	IMAGE_NT_HEADERS32* pe_header;
+	IMAGE_NT_HEADERS64* pe64_header;
+	IMAGE_DATA_DIRECTORY sec_dir;
+	WIN_CERTIFICATE* cert;
+
+	pe_header = GetPeHeader(buf, buf_len, NULL, NULL);
+	if (pe_header == NULL)
+		return NULL;
+
+	if (pe_header->FileHeader.Machine == IMAGE_FILE_MACHINE_I386 || pe_header->FileHeader.Machine == IMAGE_FILE_MACHINE_ARM) {
+		sec_dir = pe_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_SECURITY];
+	} else {
+		pe64_header = (IMAGE_NT_HEADERS64*)pe_header;
+		sec_dir = pe64_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_SECURITY];
+	}
+	if (sec_dir.VirtualAddress == 0 || sec_dir.VirtualAddress >= MAX_PE_SIZE || sec_dir.Size == 0 || sec_dir.Size >= MAX_PE_SIZE)
+		return NULL;
+	// For the security directory, VirtualAddress is a file offset rather than an RVA
+	if (sec_dir.VirtualAddress + sec_dir.Size > buf_len || sec_dir.Size < offsetof(WIN_CERTIFICATE, bCertificate))
+		return NULL;
+
+	cert = (WIN_CERTIFICATE*)&buf[sec_dir.VirtualAddress];
+	// dwLength includes the WIN_CERTIFICATE header and must fit in the security directory
+	if (cert->dwLength <= offsetof(WIN_CERTIFICATE, bCertificate) || cert->dwLength > sec_dir.Size ||
+		cert->wCertificateType != WIN_CERT_TYPE_PKCS_SIGNED_DATA)
+		return NULL;
+
+	return (uint8_t*)cert;
 }

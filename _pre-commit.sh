@@ -32,15 +32,14 @@ s/^\([ \t]*\)*\(FILE\|PRODUCT\)VERSION\([ \t]*\)\([0-9]*\),\([0-9]*\),[0-9]*,\(.
 s/^\([ \t]*\)VALUE\([ \t]*\)"\(File\|Product\)Version",\([ \t]*\)"\(.*\)\..*"[ \t]*/\1VALUE\2"\3Version",\4"\5.@@BUILD@@"/
 s/^\(.*\)"Rufus \(.*\)\..*"\(.*\)/\1"Rufus \2.@@BUILD@@"\3/
 s/^\([ \t]*\)Version="\([0-9]*\)\.\([0-9]*\)\.[0-9]*\.\([0-9]*\)"\(.*\)/\1Version="\2.\3.@@BUILD@@.\4"\5/
+s/\xef\xbf\xbd/\xa9/
 _EOF
 
 # First run sed to substitute our variable in the sed command file
 sed -i -e "s/@@BUILD@@/$BUILD/g" cmd.sed
 # Run sed to update the nano version
 sed -b -i -f cmd.sed src/rufus.rc
-sed -b -i -f cmd.sed res/appstore/Package.appxmanifest
 # NB: we need to run git add else the modified files may be ignored
 git add src/rufus.rc
-git add res/appstore/Package.appxmanifest
 
 rm cmd.sed
